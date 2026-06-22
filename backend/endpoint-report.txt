@@ -1,0 +1,98 @@
+======================================================================
+  ENDPOINT AUDIT — 2026-06-22 21:46 — 67/67 OK
+======================================================================
+
+## Health  (1/1)
+  [OK] GET /health                        got=200 exp=200  health + DB
+
+## Auth  (7/7)
+  [OK] POST /auth/login                   got=200 exp=200  login (valid)
+  [OK] POST /auth/login                   got=401 exp=401  login (bad)
+  [OK] POST /auth/register                got=201 exp=200/201/409  register
+  [OK] GET /auth/me                       got=200 exp=200  me
+  [OK] GET /auth/me                       got=401 exp=401  me (no token=401)
+  [OK] POST /auth/refresh                 got=401 exp=401  refresh (no cookie)
+  [OK] POST /auth/logout                  got=200 exp=200  logout
+
+## Doctors  (9/9)
+  [OK] GET /doctors                       got=200 exp=200  list
+  [OK] GET /doctors/:id                   got=200 exp=200  by id
+  [OK] GET /doctors/:id/schedule          got=200 exp=200  schedule
+  [OK] PUT /doctors/:id/schedule          got=200 exp=200  update schedule
+  [OK] POST /doctors                      got=201 exp=201  create
+  [OK] PUT /doctors/:id                   got=200 exp=200  update
+  [OK] GET /specializations               got=200 exp=200  specializations
+  [OK] POST /specializations              got=201 exp=201  create spec
+  [OK] POST /doctors                      got=403 exp=403  create (role guard)
+
+## Patients  (13/13)
+  [OK] GET /patients                      got=200 exp=200  list
+  [OK] GET /patients?search               got=200 exp=200  search
+  [OK] GET /patients/lookup               got=200 exp=200  lookup
+  [OK] GET /patients/:id                  got=200 exp=200  by id (own)
+  [OK] PUT /patients/:id                  got=200 exp=200  update
+  [OK] GET /patients/:id/allergies        got=200 exp=200  allergies
+  [OK] POST /patients/:id/allergies       got=201 exp=201  add allergy
+  [OK] DELETE /patients/:id/allergies/:aid got=200 exp=200/204  del allergy
+  [OK] GET /patients/:id/medications      got=200 exp=200  medications
+  [OK] POST /patients/:id/medications     got=201 exp=201  add medication
+  [OK] DELETE /patients/:id/medications/:mid got=200 exp=200/204  del medication
+  [OK] GET /patients/:id/prescriptions    got=200 exp=200  prescriptions
+  [OK] GET /patients/:id (other)          got=403 exp=403/404  IDOR guard
+
+## Appts  (5/5)
+  [OK] GET /appointments                  got=200 exp=200  list
+  [OK] GET /appointments/booked           got=200 exp=200  booked
+  [OK] POST /appointments                 got=201 exp=201  book
+  [OK] POST /appointments                 got=409 exp=409  double-book 409
+  [OK] PATCH /appointments/:id/status     got=200 exp=200  status update
+
+## Tokens  (12/12)
+  [OK] GET /tokens/today                  got=200 exp=200  today (doctor)
+  [OK] GET /tokens/queue                  got=200 exp=200  queue
+  [OK] GET /tokens/my-today               got=404 exp=200/404  my-today
+  [OK] POST /tokens/walkin                got=201 exp=201  walkin
+  [OK] POST /tokens/:id/arrive            got=200 exp=200  arrive
+  [OK] POST /tokens/:id/hold              got=200 exp=200  hold
+  [OK] POST /tokens/:id/resume            got=200 exp=200  resume
+  [OK] POST /tokens/:id/skip              got=200 exp=200  skip
+  [OK] POST /tokens/:id/recall            got=200 exp=200  recall
+  [OK] POST /tokens/next                  got=200 exp=200/404  next
+  [OK] POST /tokens/:id/start-visit       got=201 exp=200/201  start-visit
+  [OK] POST /tokens/next (patient)        got=403 exp=403  queue (role guard)
+
+## Visits  (4/4)
+  [OK] GET /visits                        got=200 exp=200  today
+  [OK] GET /visits/:id                    got=200 exp=200  by id
+  [OK] GET /visits/:id/history            got=200 exp=200  history
+  [OK] GET /visits/:id/attachments        got=200 exp=200  attachments
+
+## Rx  (2/2)
+  [OK] PUT /prescriptions/draft           got=200 exp=200  save draft
+  [OK] POST /prescriptions/finalize       got=200 exp=200/409  finalize+PDF
+
+## Billing  (5/5)
+  [OK] GET /invoices                      got=200 exp=200  list
+  [OK] POST /invoices                     got=201 exp=201  create
+  [OK] GET /invoices/:id                  got=200 exp=200  by id
+  [OK] PATCH /invoices/:id/pay            got=200 exp=200  pay
+  [OK] DELETE /invoices/:id               got=204 exp=200/204  cancel
+
+## Clinic  (3/3)
+  [OK] GET /clinic/theme                  got=200 exp=200  get theme
+  [OK] PUT /clinic/theme                  got=200 exp=200  put theme
+  [OK] GET /dashboard/stats               got=200 exp=200  dashboard/stats
+
+## Stats  (3/3)
+  [OK] GET /stats/dashboard               got=200 exp=200  dashboard
+  [OK] GET /stats/analytics               got=200 exp=200  analytics (recep)
+  [OK] GET /stats/analytics               got=200 exp=200  analytics (doctor)
+
+## Audit  (2/2)
+  [OK] GET /audit-logs                    got=200 exp=200  list
+  [OK] POST /audit-logs                   got=201 exp=200/201  create
+
+## Labs  (1/1)
+  [OK] GET /lab-reports                   got=200 exp=200  list
+
+ALL ENDPOINTS OK.

@@ -1,0 +1,30 @@
+# Secrets — never commit. All secrets live in these files only.
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+.next/
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# Logs & temp
+*.log
+npm-debug.log*
+e2e-run.log
+e2e-report.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,248 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #1c1c1e;
+  --card-foreground: #f5f5f7;
+  --popover: #1c1c1e;
+  --popover-foreground: #f5f5f7;
+  --primary: #2997ff; /* Apple Blue */
+  --primary-foreground: #ffffff;
+  --secondary: #2c2c2e;
+  --secondary-foreground: #f5f5f7;
+  --muted: #1c1c1e;
+  --muted-foreground: #86868b;
+  --accent: #2c2c2e;
+  --accent-foreground: #f5f5f7;
+  --destructive: #ff453a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #2c2c2e;
+  --input-background: #1c1c1e;
+  --switch-background: #38383a;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: #2997ff;
+  
+  --chart-1: #2997ff;
+  --chart-2: #32d74b; /* Apple Green */
+  --chart-3: #ff9f0a; /* Apple Orange */
+  --chart-4: #bf5af2; /* Apple Purple */
+  --chart-5: #ff453a; /* Apple Red */
+  
+  --radius: 1.125rem;
+  
+  --sidebar: #000000;
+  --sidebar-foreground: #f5f5f7;
+  --sidebar-primary: #2997ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1c1c1e;
+  --sidebar-accent-foreground: #f5f5f7;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #2997ff;
+}
+
+.dark {
+  --background: #000000;
+  --foreground: #f5f5f7;
+  --card: #1c1c1e;
+  --card-foreground: #f5f5f7;
+  --popover: #1c1c1e;
+  --popover-foreground: #f5f5f7;
+  --primary: #2997ff;
+  --primary-foreground: #ffffff;
+  --secondary: #2c2c2e;
+  --secondary-foreground: #f5f5f7;
+  --muted: #1c1c1e;
+  --muted-foreground: #86868b;
+  --accent: #2c2c2e;
+  --accent-foreground: #f5f5f7;
+  --destructive: #ff453a;
+  --destructive-foreground: #ffffff;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: #2c2c2e;
+  --input-background: #1c1c1e;
+  --switch-background: #38383a;
+  --ring: #2997ff;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 16px);
+  --radius-3xl: calc(var(--radius) + 24px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-white;
+    /* Premium modern typography stack */
+    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+
+  /* Pure black base with animated ambient orbs (Apple Intelligence / VisionOS feel) */
+  .apple-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background-color: #000000;
+    overflow: hidden;
+  }
+
+  .apple-bg::before,
+  .apple-bg::after {
+    content: "";
+    position: absolute;
+    width: 90vw;
+    height: 90vh;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.12;
+    animation: ambientFloat 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+
+  .apple-bg::before {
+    background: radial-gradient(circle, #2997ff, #bf5af2, transparent);
+    top: -20vh;
+    left: -20vw;
+    animation-delay: 0s;
+  }
+
+  .apple-bg::after {
+    background: radial-gradient(circle, #32d74b, #00d4ff, transparent);
+    bottom: -20vh;
+    right: -20vw;
+    animation-delay: -15s;
+  }
+
+  @keyframes ambientFloat {
+    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    33% { transform: translate(15vw, 15vh) scale(1.1) rotate(45deg); }
+    66% { transform: translate(-10vw, 20vh) scale(0.9) rotate(90deg); }
+    100% { transform: translate(5vw, -10vh) scale(1.05) rotate(135deg); }
+  }
+
+  /* Utility for massive, tight Apple marketing headings */
+  .apple-hero-text {
+    letter-spacing: -0.05em;
+    font-weight: 600;
+    line-height: 1.05;
+  }
+
+  /* Subtle gradient for text often seen on apple.com */
+  .apple-text-gradient {
+    background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glass materials */
+  .apple-glass {
+    background: rgba(20, 20, 22, 0.45);
+    backdrop-filter: blur(64px) saturate(200%);
+    -webkit-backdrop-filter: blur(64px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* Apple specific input style */
+  .apple-input {
+    background-color: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+  }
+  .apple-input:focus {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 0 4px rgba(41, 151, 255, 0.2), inset 0 1px 2px rgba(0,0,0,0.2);
+  }
+
+  /* Squircle cards */
+  .apple-card {
+    background-color: rgba(20, 20, 22, 0.35);
+    backdrop-filter: blur(64px) saturate(200%);
+    -webkit-backdrop-filter: blur(64px) saturate(200%);
+    border-radius: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 
+      0 16px 50px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease, box-shadow 0.5s ease;
+  }
+  .apple-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 
+      0 24px 60px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.04em;
+    font-weight: 600;
+  }
+
+  html {
+    font-size: var(--font-size);
+  }
+
+  h1 { font-size: var(--text-4xl); line-height: 1.1; }
+  h2 { font-size: var(--text-2xl); line-height: 1.2; }
+  h3 { font-size: var(--text-xl); line-height: 1.3; }
+  h4 { font-size: var(--text-lg); line-height: 1.4; }
+
+  label { font-size: var(--text-sm); font-weight: var(--font-weight-medium); line-height: 1.5; }
+  button { font-size: var(--text-sm); font-weight: 500; line-height: 1.5; }
+  input { font-size: var(--text-sm); font-weight: var(--font-weight-normal); line-height: 1.5; }
+}

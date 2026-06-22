@@ -1,0 +1,228 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Clinic {
+  id        String       @id @default(uuid())
+  name      String
+  slug      String       @unique
+  createdAt DateTime     @default(now())
+  theme     ClinicTheme?
+}
+
+model ClinicTheme {
+  id                String   @id @default(uuid())
+  clinicId          String   @unique
+  primaryColor      String   @default("#6366f1")
+  secondaryColor    String   @default("#8b5cf6")
+  accentColor       String   @default("#06b6d4")
+  fontFamily        String   @default("Inter")
+  logoBlobPath      String?
+  clinicDisplayName String
+  updatedAt         DateTime @updatedAt
+  clinic            Clinic   @relation(fields: [clinicId], references: [id])
+}
+
+model Patient {
+  id           String    @id @default(uuid())
+  clinicId     String
+  fullName     String
+  phone        String
+  dateOfBirth  DateTime?
+  gender       String?
+  bloodGroup   String?
+  passwordHash String
+  createdAt    DateTime  @default(now())
+
+  @@unique([clinicId, phone])
+  @@index([clinicId])
+}
+
+model Doctor {
+  id               String           @id @default(uuid())
+  clinicId         String
+  fullName         String
+  phone            String?
+  specializationId String
+  qualification    String?
+  bio              String?
+  avatarBlobPath   String?
+  isActive         Boolean          @default(true)
+  passwordHash     String
+  schedules        DoctorSchedule[]
+
+  @@unique([clinicId, phone])
+  @@index([clinicId])
+}
+
+model Receptionist {
+  id           String   @id @default(uuid())
+  clinicId     String
+  fullName     String
+  phone        String
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  @@unique([clinicId, phone])
+  @@index([clinicId])
+}
+
+model Specialization {
+  id       String @id @default(uuid())
+  clinicId String
+  name     String
+
+  @@unique([clinicId, name])
+  @@index([clinicId])
+}
+
+model DoctorSchedule {
+  id                  String  @id @default(uuid())
+  clinicId            String
+  doctorId            String
+  dayOfWeek           Int
+  startTime           String
+  endTime             String
+  slotDurationMinutes Int
+  isActive            Boolean @default(true)
+  doctor              Doctor  @relation(fields: [doctorId], references: [id])
+
+  @@unique([clinicId, doctorId, dayOfWeek])
+  @@index([clinicId])
+}
+
+model Appointment {
+  id        String   @id @default(uuid())
+  clinicId  String
+  patientId String
+  doctorId  String
+  slotStart DateTime
+  slotEnd   DateTime
+  status    String   @default("Scheduled")
+  source    String   @default("Online")
+  createdAt DateTime @default(now())
+  token     Token?
+  visit     Visit?
+
+  @@unique([clinicId, doctorId, slotStart])
+  @@index([clinicId, doctorId, slotStart])
+  @@index([clinicId, patientId])
+}
+
+model TokenSequence {
+  clinicId  String
+  queueDate DateTime @db.Date
+  lastToken Int      @default(0)
+
+  @@id([clinicId, queueDate])
+}
+
+model Token {
+  id            String       @id @default(uuid())
+  clinicId      String
+  appointmentId String?      @unique
+  patientId     String
+  tokenNumber   Int
+  queueDate     DateTime     @db.Date
+  status        String       @default("Waiting")
+  source        String       @default("Online")
+  calledAt      DateTime?
+  completedAt   DateTime?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  @@unique([clinicId, tokenNumber, queueDate])
+  @@index([clinicId, queueDate, status])
+}
+
+model Visit {
+  id            String   @id @default(uuid())
+  clinicId      String
+  appointmentId String   @unique
+  patientId     String
+  doctorId      String
+  tokenId       String   @unique
+  version       Int      @default(0)
+  status        String   @default("Open")
+  createdAt     DateTime @default(now())
+
+  appointment       Appointment        @relation(fields: [appointmentId], references: [id])
+  prescriptionDraft PrescriptionDraft?
+  prescription      Prescription?
+  labReports        LabReport[]
+
+  @@index([clinicId, patientId])
+  @@index([clinicId, doctorId])
+}
+
+model Allergy {
+  id         String   @id @default(uuid())
+  clinicId   String
+  patientId  String
+  allergen   String
+  reaction   String?
+  severity   String?
+  recordedAt DateTime @default(now())
+
+  @@index([clinicId, patientId])
+}
+
+model ActiveMedication {
+  id           String   @id @default(uuid())
+  clinicId     String
+  patientId    String
+  drugName     String
+  dose         String?
+  frequency    String?
+  prescribedBy String?
+  startedAt    DateTime @db.Date
+  notes        String?
+
+  @@index([clinicId, patientId])
+}
+
+model LabReport {
+  id         String   @id @default(uuid())
+  clinicId   String
+  patientId  String
+  visitId    String?
+  reportName String
+  blobPath   String
+  uploadedAt DateTime @default(now())
+  uploadedBy String
+  visit      Visit?   @relation(fields: [visitId], references: [id])
+
+  @@index([clinicId, patientId])
+}
+
+model PrescriptionDraft {
+  id        String   @id @default(uuid())
+  clinicId  String
+  visitId   String   @unique
+  diagnosis String?
+  notes     String?
+  drugs     Json     @default("[]")
+  updatedAt DateTime @updatedAt
+  visit     Visit    @relation(fields: [visitId], references: [id])
+}
+
+model Prescription {
+  id        String   @id @default(uuid())
+  clinicId  String
+  visitId   String   @unique
+  patientId String
+  doctorId  String
+  diagnosis String
+  notes     String?
+  drugs     Json
+  blobPath  String?
+  signedAt  DateTime @default(now())
+  visit     Visit    @relation(fields: [visitId], references: [id])
+
+  @@index([clinicId, patientId])
+}

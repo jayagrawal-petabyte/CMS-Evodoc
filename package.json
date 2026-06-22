@@ -1,0 +1,13 @@
+{
+  "name": "final-cms",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter backend dev",
+    "dev:backend": "pnpm --filter backend dev",
+    "build": "pnpm --filter shared build && pnpm --filter backend build",
+    "db:generate": "pnpm --filter backend prisma:generate"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

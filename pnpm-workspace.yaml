@@ -1,0 +1,9 @@
+packages:
+  - 'packages/*'
+  - 'backend'
+  # The separate Vite frontend in ./frontend is managed with npm (not this workspace).
+allowBuilds:
+  '@prisma/client': false
+  '@prisma/engines': false
+  bcrypt: false
+  prisma: false
