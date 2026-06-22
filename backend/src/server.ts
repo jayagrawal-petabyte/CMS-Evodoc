@@ -24,16 +24,18 @@ async function build() {
 
   const fastify = Fastify({ logger: true })
 
-  // Allow the configured frontend origin, plus any localhost port in dev
-  // (Next.js falls back to 3001/3002 when 3000 is taken — without this, those
-  // origins get blocked by CORS and every API call silently fails.)
+  // Allow the configured frontend origin, plus any localhost/127.0.0.1 port in dev
+  // (Vite/Next can land on 5173/3001/etc., and browsers may resolve the dev URL as
+  // either localhost or 127.0.0.1 — both must be allowed or credentialed API calls
+  // get blocked by CORS and every request, including login, silently fails.)
   const allowedOrigin = process.env.FRONTEND_URL ?? 'http://localhost:3000'
   await fastify.register(cors, {
     origin: (origin, cb) => {
-      if (!origin || origin === allowedOrigin || /^http:\/\/localhost:\d+$/.test(origin)) {
+      if (!origin || origin === allowedOrigin || /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
         cb(null, true)
       } else {
-        cb(new Error('Not allowed by CORS'), false)
+        // Don't throw (that surfaces as a 500); just decline the CORS headers.
+        cb(null, false)
       }
     },
     credentials: true,

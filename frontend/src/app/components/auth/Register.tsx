@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { motion } from "motion/react";
 import { Activity, Eye, EyeOff } from "lucide-react";
+import { apiPost } from "../lib/api";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -11,16 +12,35 @@ export default function Register() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  function update(k: string, v: string) { setForm((f) => ({ ...f, [k]: v })); }
+  function update(k: string, v: string) { setForm((f) => ({ ...f, [k]: v })); setError(""); }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+    if (form.name.trim().length < 2) { setError("Please enter your full name."); return; }
+    if (form.phone.replace(/\D/g, "").length < 10) { setError("Enter a valid 10-digit phone number."); return; }
+    if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
+
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setLoading(false);
-    setSuccess(true);
-    setTimeout(() => navigate("/"), 2000);
+    try {
+      await apiPost("/auth/register", {
+        fullName: form.name.trim(),
+        phone: form.phone.trim(),
+        password: form.password,
+        dateOfBirth: form.dob || undefined,
+        gender: form.gender,
+        bloodGroup: form.bloodGroup || undefined,
+      });
+      setSuccess(true);
+      setTimeout(() => navigate("/"), 2000);
+    } catch (err: any) {
+      // 409 = phone already registered; other = validation / backend down
+      setError(err?.message ?? "Registration failed. Is the backend running?");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -131,6 +151,10 @@ export default function Register() {
                     </select>
                   </div>
                 </div>
+
+                {error && (
+                  <p className="text-[#ff453a] text-sm text-center font-medium px-2">{error}</p>
+                )}
 
                 <div className="pt-2">
                   <button
