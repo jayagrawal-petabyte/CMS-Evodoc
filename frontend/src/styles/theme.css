@@ -1,75 +1,128 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   CMS · Clinical Monitoring System — Design Token System
+   Target: Light cream dashboard (reference: DentalCare Management System image)
+   Palette: charcoal sidebar · off-white canvas · pastel stat cards · clean type
+   ───────────────────────────────────────────────────────────────────────────── */
+
 @custom-variant dark (&:is(.dark *));
 
+/* ── Root (light mode — matches reference) ───────────────────────────────── */
 :root {
   --font-size: 16px;
-  --background: #000000;
-  --foreground: #f5f5f7;
-  --card: #1c1c1e;
-  --card-foreground: #f5f5f7;
-  --popover: #1c1c1e;
-  --popover-foreground: #f5f5f7;
-  --primary: #2997ff; /* Apple Blue */
+
+  /* Canvas */
+  --background: #f5f6fa;           /* off-white / cream page bg */
+  --foreground: #111827;           /* near-black body text */
+
+  /* Cards — pure white, soft shadow */
+  --card: #ffffff;
+  --card-foreground: #111827;
+
+  /* Popover / dropdown */
+  --popover: #ffffff;
+  --popover-foreground: #111827;
+
+  /* Primary action — charcoal (matches "New Appointment" button) */
+  --primary: #111827;
   --primary-foreground: #ffffff;
-  --secondary: #2c2c2e;
-  --secondary-foreground: #f5f5f7;
-  --muted: #1c1c1e;
-  --muted-foreground: #86868b;
-  --accent: #2c2c2e;
-  --accent-foreground: #f5f5f7;
-  --destructive: #ff453a;
+
+  /* Secondary surface */
+  --secondary: #f0f2f5;
+  --secondary-foreground: #374151;
+
+  /* Muted labels / captions */
+  --muted: #f0f2f5;
+  --muted-foreground: #6b7280;
+
+  /* Accent highlight */
+  --accent: #e5e7eb;
+  --accent-foreground: #111827;
+
+  /* Destructive / danger */
+  --destructive: #dc2626;
   --destructive-foreground: #ffffff;
-  --border: rgba(255, 255, 255, 0.08);
-  --input: #2c2c2e;
-  --input-background: #1c1c1e;
-  --switch-background: #38383a;
+
+  /* Borders — very subtle hairlines */
+  --border: #e5e7eb;
+  --input: #ffffff;
+  --input-background: #ffffff;
+  --switch-background: #d1d5db;
+
+  /* Focus ring */
+  --ring: #111827;
+
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #2997ff;
-  
-  --chart-1: #2997ff;
-  --chart-2: #32d74b; /* Apple Green */
-  --chart-3: #ff9f0a; /* Apple Orange */
-  --chart-4: #bf5af2; /* Apple Purple */
-  --chart-5: #ff453a; /* Apple Red */
-  
-  --radius: 1.125rem;
-  
-  --sidebar: #000000;
-  --sidebar-foreground: #f5f5f7;
-  --sidebar-primary: #2997ff;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1c1c1e;
-  --sidebar-accent-foreground: #f5f5f7;
-  --sidebar-border: rgba(255, 255, 255, 0.08);
-  --sidebar-ring: #2997ff;
+
+  /* ── Chart colours — clean, opaque (reference uses amber line chart) ── */
+  --chart-1: #2563eb;   /* blue  */
+  --chart-2: #16a34a;   /* green */
+  --chart-3: #d97706;   /* amber */
+  --chart-4: #9333ea;   /* purple */
+  --chart-5: #dc2626;   /* red */
+
+  /* ── Border radius (12–16 px as per reference) ───────────────────────── */
+  --radius: 0.875rem;   /* 14 px default — cards, inputs */
+
+  /* ── Sidebar — dark charcoal matching reference ──────────────────────── */
+  --sidebar: #1a1d23;
+  --sidebar-foreground: #9ca3af;          /* muted grey labels */
+  --sidebar-primary: #ffffff;             /* active-pill text */
+  --sidebar-primary-foreground: #111827;  /* active-pill bg (white) */
+  --sidebar-accent: #252830;              /* hover surface */
+  --sidebar-accent-foreground: #e5e7eb;
+  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-ring: #6b7280;
+
+  /* ── Stat-card pastel tints (utility vars — used in components) ──────── */
+  --stat-blue-bg:   #eef4ff;
+  --stat-blue-fg:   #2563eb;
+  --stat-yellow-bg: #fffbeb;
+  --stat-yellow-fg: #d97706;
+  --stat-green-bg:  #ecfdf5;
+  --stat-green-fg:  #16a34a;
+  --stat-red-bg:    #fff1f0;
+  --stat-red-fg:    #dc2626;
+
+  /* ── Status pill colours ─────────────────────────────────────────────── */
+  --status-confirmed-bg:  #dcfce7;
+  --status-confirmed-fg:  #16a34a;
+  --status-pending-bg:    #fef3c7;
+  --status-pending-fg:    #d97706;
+  --status-inprogress-bg: #dbeafe;
+  --status-inprogress-fg: #2563eb;
+  --status-cancelled-bg:  #fee2e2;
+  --status-cancelled-fg:  #dc2626;
 }
 
+/* ── Dark override (kept minimal — primary UI is light) ────────────────── */
 .dark {
-  --background: #000000;
-  --foreground: #f5f5f7;
-  --card: #1c1c1e;
-  --card-foreground: #f5f5f7;
-  --popover: #1c1c1e;
-  --popover-foreground: #f5f5f7;
-  --primary: #2997ff;
-  --primary-foreground: #ffffff;
-  --secondary: #2c2c2e;
-  --secondary-foreground: #f5f5f7;
-  --muted: #1c1c1e;
-  --muted-foreground: #86868b;
-  --accent: #2c2c2e;
-  --accent-foreground: #f5f5f7;
-  --destructive: #ff453a;
+  --background: #111827;
+  --foreground: #f9fafb;
+  --card: #1f2937;
+  --card-foreground: #f9fafb;
+  --popover: #1f2937;
+  --popover-foreground: #f9fafb;
+  --primary: #f9fafb;
+  --primary-foreground: #111827;
+  --secondary: #374151;
+  --secondary-foreground: #f9fafb;
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+  --accent: #374151;
+  --accent-foreground: #f9fafb;
+  --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: rgba(255, 255, 255, 0.08);
-  --input: #2c2c2e;
-  --input-background: #1c1c1e;
-  --switch-background: #38383a;
-  --ring: #2997ff;
+  --input: #1f2937;
+  --input-background: #1f2937;
+  --switch-background: #4b5563;
+  --ring: #f9fafb;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
 }
 
+/* ── Tailwind v4 @theme mapping ─────────────────────────────────────────── */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -97,12 +150,16 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 6px);
-  --radius-md: calc(var(--radius) - 4px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 8px);
-  --radius-2xl: calc(var(--radius) + 16px);
-  --radius-3xl: calc(var(--radius) + 24px);
+
+  /* Radius scale */
+  --radius-sm: calc(var(--radius) - 6px);   /* 8 px */
+  --radius-md: calc(var(--radius) - 2px);   /* 12 px */
+  --radius-lg: var(--radius);               /* 14 px */
+  --radius-xl: calc(var(--radius) + 4px);   /* 18 px */
+  --radius-2xl: calc(var(--radius) + 10px); /* 24 px */
+  --radius-3xl: calc(var(--radius) + 18px); /* 32 px */
+
+  /* Sidebar */
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -111,138 +168,362 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Stat tints */
+  --color-stat-blue-bg:   var(--stat-blue-bg);
+  --color-stat-blue-fg:   var(--stat-blue-fg);
+  --color-stat-yellow-bg: var(--stat-yellow-bg);
+  --color-stat-yellow-fg: var(--stat-yellow-fg);
+  --color-stat-green-bg:  var(--stat-green-bg);
+  --color-stat-green-fg:  var(--stat-green-fg);
+  --color-stat-red-bg:    var(--stat-red-bg);
+  --color-stat-red-fg:    var(--stat-red-fg);
+
+  /* Status pills */
+  --color-status-confirmed-bg:  var(--status-confirmed-bg);
+  --color-status-confirmed-fg:  var(--status-confirmed-fg);
+  --color-status-pending-bg:    var(--status-pending-bg);
+  --color-status-pending-fg:    var(--status-pending-fg);
+  --color-status-inprogress-bg: var(--status-inprogress-bg);
+  --color-status-inprogress-fg: var(--status-inprogress-fg);
+  --color-status-cancelled-bg:  var(--status-cancelled-bg);
+  --color-status-cancelled-fg:  var(--status-cancelled-fg);
 }
 
+/* ── Base layer ─────────────────────────────────────────────────────────── */
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/40;
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary selection:text-white;
-    /* Premium modern typography stack */
-    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  }
-
-  /* Pure black base with animated ambient orbs (Apple Intelligence / VisionOS feel) */
-  .apple-bg {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    z-index: -1;
-    background-color: #000000;
-    overflow: hidden;
-  }
-
-  .apple-bg::before,
-  .apple-bg::after {
-    content: "";
-    position: absolute;
-    width: 90vw;
-    height: 90vh;
-    border-radius: 50%;
-    filter: blur(140px);
-    opacity: 0.12;
-    animation: ambientFloat 30s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-    pointer-events: none;
-  }
-
-  .apple-bg::before {
-    background: radial-gradient(circle, #2997ff, #bf5af2, transparent);
-    top: -20vh;
-    left: -20vw;
-    animation-delay: 0s;
-  }
-
-  .apple-bg::after {
-    background: radial-gradient(circle, #32d74b, #00d4ff, transparent);
-    bottom: -20vh;
-    right: -20vw;
-    animation-delay: -15s;
-  }
-
-  @keyframes ambientFloat {
-    0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    33% { transform: translate(15vw, 15vh) scale(1.1) rotate(45deg); }
-    66% { transform: translate(-10vw, 20vh) scale(0.9) rotate(90deg); }
-    100% { transform: translate(5vw, -10vh) scale(1.05) rotate(135deg); }
-  }
-
-  /* Utility for massive, tight Apple marketing headings */
-  .apple-hero-text {
-    letter-spacing: -0.05em;
-    font-weight: 600;
-    line-height: 1.05;
-  }
-
-  /* Subtle gradient for text often seen on apple.com */
-  .apple-text-gradient {
-    background: linear-gradient(180deg, #ffffff 0%, #a1a1a6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  /* Glass materials */
-  .apple-glass {
-    background: rgba(20, 20, 22, 0.45);
-    backdrop-filter: blur(64px) saturate(200%);
-    -webkit-backdrop-filter: blur(64px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-      0 10px 40px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  }
-
-  /* Apple specific input style */
-  .apple-input {
-    background-color: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
-  }
-  .apple-input:focus {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.25);
-    box-shadow: 0 0 0 4px rgba(41, 151, 255, 0.2), inset 0 1px 2px rgba(0,0,0,0.2);
-  }
-
-  /* Squircle cards */
-  .apple-card {
-    background-color: rgba(20, 20, 22, 0.35);
-    backdrop-filter: blur(64px) saturate(200%);
-    -webkit-backdrop-filter: blur(64px) saturate(200%);
-    border-radius: 32px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 
-      0 16px 50px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.12);
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.5s ease, box-shadow 0.5s ease;
-  }
-  .apple-card:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    transform: translateY(-4px) scale(1.01);
-    box-shadow: 
-      0 24px 60px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
   h1, h2, h3, h4, h5, h6 {
-    letter-spacing: -0.04em;
-    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: var(--foreground);
   }
 
   html {
     font-size: var(--font-size);
   }
 
-  h1 { font-size: var(--text-4xl); line-height: 1.1; }
-  h2 { font-size: var(--text-2xl); line-height: 1.2; }
-  h3 { font-size: var(--text-xl); line-height: 1.3; }
-  h4 { font-size: var(--text-lg); line-height: 1.4; }
+  /* ── Scrollbar — light, minimal ─────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+}
 
-  label { font-size: var(--text-sm); font-weight: var(--font-weight-medium); line-height: 1.5; }
-  button { font-size: var(--text-sm); font-weight: 500; line-height: 1.5; }
-  input { font-size: var(--text-sm); font-weight: var(--font-weight-normal); line-height: 1.5; }
+/* ── Design utility classes (used by all components) ────────────────────── */
+@layer base {
+  /* ── Standard card — white, 14 px radius, soft shadow ─────────────────── */
+  .cms-card {
+    background-color: #ffffff;
+    border-radius: var(--radius);
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .cms-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  /* ── Stat card colour tints ─────────────────────────────────────────── */
+  .stat-blue   { background-color: var(--stat-blue-bg);   color: var(--stat-blue-fg); }
+  .stat-yellow { background-color: var(--stat-yellow-bg); color: var(--stat-yellow-fg); }
+  .stat-green  { background-color: var(--stat-green-bg);  color: var(--stat-green-fg); }
+  .stat-red    { background-color: var(--stat-red-bg);    color: var(--stat-red-fg); }
+
+  /* ── Status pill badges ──────────────────────────────────────────────── */
+  .badge-confirmed {
+    background-color: var(--status-confirmed-bg);
+    color: var(--status-confirmed-fg);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+  }
+  .badge-pending {
+    background-color: var(--status-pending-bg);
+    color: var(--status-pending-fg);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+  }
+  .badge-inprogress {
+    background-color: var(--status-inprogress-bg);
+    color: var(--status-inprogress-fg);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+  }
+  .badge-cancelled {
+    background-color: var(--status-cancelled-bg);
+    color: var(--status-cancelled-fg);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+  }
+  .badge-scheduled {
+    background-color: var(--status-inprogress-bg);
+    color: var(--status-inprogress-fg);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Avatar chip — rounded initials ─────────────────────────────────── */
+  .avatar-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Input — light, clean ────────────────────────────────────────────── */
+  .cms-input {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: calc(var(--radius) - 2px);
+    color: #111827;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cms-input::placeholder { color: #9ca3af; }
+  .cms-input:focus {
+    outline: none;
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.12);
+  }
+
+  /* ── Primary button — charcoal ───────────────────────────────────────── */
+  .cms-btn-primary {
+    background-color: #111827;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.875rem;
+    padding: 8px 18px;
+    border-radius: calc(var(--radius) - 2px);
+    transition: background-color 0.18s ease, transform 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    border: none;
+  }
+  .cms-btn-primary:hover {
+    background-color: #1f2937;
+    transform: translateY(-1px);
+  }
+
+  /* ── Secondary button — outlined ─────────────────────────────────────── */
+  .cms-btn-secondary {
+    background-color: #ffffff;
+    color: #374151;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 7px 16px;
+    border-radius: calc(var(--radius) - 2px);
+    border: 1px solid #e5e7eb;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .cms-btn-secondary:hover {
+    background-color: #f9fafb;
+    border-color: #d1d5db;
+  }
+
+  /* ── Section label (muted uppercase category) ────────────────────────── */
+  .cms-section-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #9ca3af;
+    padding: 12px 16px 4px;
+    user-select: none;
+  }
+
+  /* ── Sidebar nav item ────────────────────────────────────────────────── */
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #9ca3af;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    white-space: nowrap;
+    position: relative;
+  }
+  .sidebar-item:hover {
+    background-color: #232730;
+    color: #f3f4f6;
+  }
+  /* Active state: refined dark pill with left accent bar + tinted icon */
+  .sidebar-item-active {
+    background-color: #262a34 !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  }
+  .sidebar-item-active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 3px;
+    background-color: #3b82f6;
+    border-radius: 0 4px 4px 0;
+  }
+  .sidebar-item-active svg {
+    color: #60a5fa;
+  }
+
+  /* ── Page header typography ──────────────────────────────────────────── */
+  .page-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+  }
+  .page-subtitle {
+    font-size: 0.8125rem;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+
+  /* ── Table styling ───────────────────────────────────────────────────── */
+  .cms-table thead tr {
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .cms-table thead th {
+    padding: 10px 16px;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #6b7280;
+    text-align: left;
+  }
+  .cms-table tbody tr {
+    border-bottom: 1px solid #f3f4f6;
+    transition: background-color 0.1s ease;
+  }
+  .cms-table tbody tr:hover {
+    background-color: #f9fafb;
+  }
+  .cms-table tbody td {
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: #374151;
+    vertical-align: middle;
+  }
+
+  /* ── Legacy glass classes kept as thin shims (components still use them) */
+  /* These remap the old dark-glass tokens to equivalent light equivalents  */
+  .apple-card {
+    background-color: #ffffff;
+    border-radius: var(--radius);
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease;
+  }
+  .apple-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .apple-glass {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+  }
+
+  .apple-input {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .apple-input:focus {
+    border-color: #6b7280;
+    box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.12);
+  }
+
+  .interactive-card {
+    cursor: pointer;
+  }
+  .interactive-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  /* ── Old ambient background — neutral page fill ─────────────────────── */
+  .apple-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1;
+    background-color: #f5f6fa;
+  }
+
+  /* ── Text gradient helpers (kept, now map to neutral dark) ──────────── */
+  .apple-hero-text {
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+  .apple-text-gradient {
+    background: linear-gradient(180deg, #111827 0%, #6b7280 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text-blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text-emerald {
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text-purple {
+    background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }

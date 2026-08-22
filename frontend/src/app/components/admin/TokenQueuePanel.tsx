@@ -7,25 +7,24 @@ import { Users, Play, PauseCircle, SkipForward, RotateCcw, XCircle, CheckCircle2
 type TokenStatus = "Waiting" | "Arrived" | "Called" | "OnHold" | "Skipped" | "Completed" | "Abandoned";
 type Token = any;
 
-// Maps a target status to the backend token action endpoint.
 const ACTION: Record<string, string> = {
   Arrived: "arrive",
-  Called: "recall", // sets a specific token to Called (used for Arrive→Call and Skip→Recall)
+  Called: "recall",
   OnHold: "hold",
-  Waiting: "resume", // OnHold → Waiting
+  Waiting: "resume",
   Skipped: "skip",
   Abandoned: "abandon",
   Completed: "complete",
 };
 
-const STATUS_STYLES: Record<TokenStatus, { color: string; bg: string; border: string }> = {
-  Waiting: { color: "text-[#ff9f0a]", bg: "bg-[#ff9f0a]/10", border: "border-[#ff9f0a]/20" },
-  Arrived: { color: "text-white", bg: "bg-white/10", border: "border-white/20" },
-  Called: { color: "text-[#32d74b]", bg: "bg-[#32d74b]/10", border: "border-[#32d74b]/20" },
-  OnHold: { color: "text-[#bf5af2]", bg: "bg-[#bf5af2]/10", border: "border-[#bf5af2]/20" },
-  Skipped: { color: "text-[#ff453a]", bg: "bg-[#ff453a]/10", border: "border-[#ff453a]/20" },
-  Completed: { color: "text-[#86868b]", bg: "bg-[#2c2c2e]", border: "border-transparent" },
-  Abandoned: { color: "text-[#86868b]", bg: "bg-[#2c2c2e]", border: "border-transparent" },
+const STATUS_BADGE: Record<string, string> = {
+  Waiting:   "badge-pending",
+  Arrived:   "badge-inprogress",
+  Called:    "badge-confirmed",
+  OnHold:    "badge-pending",
+  Skipped:   "badge-cancelled",
+  Completed: "badge-confirmed",
+  Abandoned: "badge-cancelled",
 };
 
 type Filter = "all" | "active";
@@ -93,158 +92,146 @@ export default function TokenQueuePanel() {
   const arrivedCount = tokens.filter((t) => t.status === "Arrived").length;
 
   return (
-    <div className="space-y-10 max-w-[1600px] mx-auto">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="apple-hero-text text-5xl mb-3 text-white">Live Queue.</h1>
-          <div className="flex items-center gap-3">
-            <div className="w-3 h-3 rounded-full bg-[#bf5af2] animate-pulse shadow-[0_0_12px_#bf5af2]" />
-            <p className="text-[#86868b] text-xl font-medium">{activeCount} active tokens · Realtime tracking</p>
-          </div>
+          <h1 className="page-title">Live Patient Queue</h1>
+          <p className="page-subtitle">{activeCount} active tokens · Live queue dispatcher</p>
         </div>
-        <div className="flex items-center gap-4">
-          <button onClick={load} className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 text-white text-base font-medium hover:bg-white/10 transition-colors">
-            <RefreshCw className="w-5 h-5 text-[#86868b]" /> Refresh
+        <div className="flex items-center gap-3 self-start md:self-auto">
+          <button onClick={load} className="cms-btn-secondary">
+            <RefreshCw className="w-3.5 h-3.5" /> Refresh
           </button>
-          <button onClick={callNext}
-            className="flex items-center gap-3 px-8 py-3 rounded-full text-base font-bold bg-[#bf5af2] text-white hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(191,90,242,0.3)]">
-            <Bell className="w-5 h-5" /> <span>Call Next Patient</span>
+          <button onClick={callNext} className="cms-btn-primary">
+            <Bell className="w-4 h-4" /> Call Next Patient
           </button>
         </div>
       </div>
 
-      {/* Quick stats */}
-      <div className="grid grid-cols-4 gap-6">
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: "Waiting", value: waitingCount, color: "text-[#ff9f0a]" },
-          { label: "Arrived", value: arrivedCount, color: "text-white" },
-          { label: "Called", value: calledCount, color: "text-[#32d74b]" },
-          { label: "On Hold", value: tokens.filter((t) => t.status === "OnHold").length, color: "text-[#bf5af2]" },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="apple-card p-8">
-            <p className={`text-6xl font-bold tracking-tighter ${color}`}>{value}</p>
-            <p className="text-[#86868b] text-lg font-semibold mt-3">{label}</p>
+          { label: "Waiting",         value: waitingCount,                                               tint: "stat-yellow" },
+          { label: "Arrived",         value: arrivedCount,                                               tint: "stat-blue" },
+          { label: "In Consultation", value: calledCount,                                                tint: "stat-green" },
+          { label: "On Hold",         value: tokens.filter((t) => t.status === "OnHold").length,         tint: "stat-red" },
+        ].map(({ label, value, tint }) => (
+          <div key={label} className={`cms-card p-5 ${tint} border-0`}>
+            <p className="text-xs font-semibold text-gray-600 mb-3">{label}</p>
+            <p className="text-3xl font-bold leading-none">{value}</p>
           </div>
         ))}
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-6 p-3 apple-card">
-        <div className="flex rounded-[1rem] overflow-hidden p-1 bg-black/50 border border-white/5">
+      <div className="cms-card p-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex rounded-lg p-1 bg-gray-100 border border-gray-200">
           {(["active", "all"] as Filter[]).map((f) => (
-            <button key={f} onClick={() => setFilter(f)} className={`px-8 py-3 text-base font-semibold capitalize rounded-xl transition-all ${filter === f ? "bg-[#2c2c2e] text-white shadow-sm" : "text-[#86868b] hover:text-white"}`}>
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${filter === f ? "bg-white shadow text-gray-800" : "text-gray-400 hover:text-gray-700"}`}
+            >
               {f === "active" ? "Active Only" : "All Tokens"}
             </button>
           ))}
         </div>
-        <div className="pr-4">
-          <select value={filterDoctor} onChange={(e) => setFilterDoctor(e.target.value)}
-            className="bg-transparent border-none text-white font-semibold text-lg focus:outline-none cursor-pointer">
-            <option value="all" className="bg-black">All Doctors</option>
-            {doctorOptions.map((id) => <option key={id} value={id} className="bg-black">{doctorNames[id]}</option>)}
-          </select>
-        </div>
+        <select value={filterDoctor} onChange={(e) => setFilterDoctor(e.target.value)}
+          className="cms-input rounded-lg px-3 py-1.5 text-xs font-semibold focus:outline-none cursor-pointer">
+          <option value="all">All Specialists</option>
+          {doctorOptions.map((id) => <option key={id} value={id}>{doctorNames[id]}</option>)}
+        </select>
       </div>
 
       {/* Token list */}
-      <div className="apple-card overflow-hidden">
-        <div className="divide-y divide-white/5">
+      <div className="cms-card overflow-hidden">
+        <div className="divide-y divide-gray-50">
           <AnimatePresence>
-            {displayed.map((token) => {
-              const sc = STATUS_STYLES[token.status];
-              return (
-                <motion.div
-                  key={token.id}
-                  layout
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="px-8 py-6 flex items-center gap-8 hover:bg-white/5 transition-colors"
-                >
-                  {/* Token # */}
-                  <div className={`w-16 h-16 rounded-[1.25rem] flex items-center justify-center text-2xl font-bold tracking-tight flex-shrink-0 ${sc.bg} ${sc.border} border ${sc.color}`}>
+            {displayed.map((token) => (
+              <motion.div
+                key={token.id}
+                layout
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, height: 0 }}
+                className="px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center gap-4 min-w-0">
+                  <div className="avatar-chip bg-gray-100 text-gray-700 font-black text-base w-11 h-11">
                     {token.tokenNumber}
                   </div>
-
-                  {/* Info */}
-                  <div className="flex-1 min-w-0 space-y-2">
-                    <div className="flex items-center gap-4">
-                      <p className="text-white text-2xl font-bold tracking-tight">{token.patientName}</p>
-                      <span className={`text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full border ${sc.bg} ${sc.color} ${sc.border} font-bold`}>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2.5 mb-0.5 flex-wrap">
+                      <p className="text-gray-800 text-sm font-semibold truncate">{token.patientName}</p>
+                      <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full font-bold flex-shrink-0 ${STATUS_BADGE[token.status] ?? "badge-pending"}`}>
                         {token.status}
                       </span>
-                      {token.source === "WalkIn" && <span className="text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#ff9f0a]/10 text-[#ff9f0a] border border-[#ff9f0a]/20 font-bold">Walk-in</span>}
+                      {token.source === "WalkIn" && <span className="badge-pending text-[10px]">Walk-in</span>}
                     </div>
-                    <p className="text-[#86868b] text-base font-medium flex items-center gap-4">
-                      <span className="flex items-center gap-2"><Phone className="w-4 h-4" /> {token.patientPhone}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#38383a]" />
-                      <span>{token.doctorName}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#38383a]" />
-                      <span className="flex items-center gap-2"><Clock className="w-4 h-4" /> {new Date(token.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
+                    <p className="text-gray-400 text-xs flex items-center gap-2 flex-wrap">
+                      <span className="flex items-center gap-1"><Phone className="w-3 h-3" /> {token.patientPhone}</span>
+                      <span>·</span><span>{token.doctorName}</span>
+                      <span>·</span><span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {new Date(token.createdAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
                     </p>
                   </div>
+                </div>
 
-                  {/* Action buttons */}
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    {token.status === "Waiting" && (
-                      <button onClick={() => updateStatus(token.id, "Arrived")} title="Mark Arrived"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold border border-white/20 text-white hover:bg-white/10 transition-colors">
-                        <CheckCircle2 className="w-5 h-5" /> Arrive
-                      </button>
-                    )}
-                    {token.status === "Arrived" && (
-                      <button onClick={() => updateStatus(token.id, "Called")} title="Call Patient"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold border border-[#bf5af2]/40 text-[#bf5af2] hover:bg-[#bf5af2]/10 transition-colors">
-                        <Bell className="w-5 h-5" /> Call
-                      </button>
-                    )}
-                    {token.status === "Called" && (
-                      <button onClick={() => updateStatus(token.id, "Completed")} title="Complete"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold border border-[#32d74b]/40 text-[#32d74b] hover:bg-[#32d74b]/10 transition-colors">
-                        <Play className="w-5 h-5" /> Finish
-                      </button>
-                    )}
-                    {["Waiting", "Arrived", "Called"].includes(token.status) && (
-                      <button onClick={() => updateStatus(token.id, "OnHold")} title="Hold"
-                        className="p-3.5 rounded-full text-[#86868b] hover:text-white hover:bg-white/10 transition-colors">
-                        <PauseCircle className="w-6 h-6" />
-                      </button>
-                    )}
-                    {token.status === "OnHold" && (
-                      <button onClick={() => updateStatus(token.id, "Waiting")} title="Resume"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold border border-[#bf5af2]/40 text-[#bf5af2] hover:bg-[#bf5af2]/10 transition-colors">
-                        <RotateCcw className="w-5 h-5" /> Resume
-                      </button>
-                    )}
-                    {["Waiting", "Arrived"].includes(token.status) && (
-                      <button onClick={() => updateStatus(token.id, "Skipped")} title="Skip"
-                        className="p-3.5 rounded-full text-[#86868b] hover:text-[#ff9f0a] hover:bg-[#ff9f0a]/10 transition-colors">
-                        <SkipForward className="w-6 h-6" />
-                      </button>
-                    )}
-                    {token.status === "Skipped" && (
-                      <button onClick={() => updateStatus(token.id, "Called")} title="Recall"
-                        className="flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold border border-white/20 text-white hover:bg-white/10 transition-colors">
-                        <RotateCcw className="w-5 h-5" /> Recall
-                      </button>
-                    )}
-                    {!["Completed", "Abandoned"].includes(token.status) && (
-                      <button onClick={() => updateStatus(token.id, "Abandoned")} title="Abandon (LWBS)"
-                        className="p-3.5 rounded-full text-[#86868b] hover:text-[#ff453a] hover:bg-[#ff453a]/10 transition-colors">
-                        <XCircle className="w-6 h-6" />
-                      </button>
-                    )}
-                  </div>
-                </motion.div>
-              );
-            })}
+                {/* Action buttons */}
+                <div className="flex items-center gap-1.5 flex-shrink-0 self-end md:self-auto">
+                  {token.status === "Waiting" && (
+                    <button onClick={() => updateStatus(token.id, "Arrived")} className="cms-btn-secondary text-xs px-3 py-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-green-600" /> Arrive
+                    </button>
+                  )}
+                  {token.status === "Arrived" && (
+                    <button onClick={() => updateStatus(token.id, "Called")} className="cms-btn-secondary text-xs px-3 py-1.5">
+                      <Bell className="w-3.5 h-3.5" /> Call
+                    </button>
+                  )}
+                  {token.status === "Called" && (
+                    <button onClick={() => updateStatus(token.id, "Completed")} className="cms-btn-secondary text-xs px-3 py-1.5">
+                      <Play className="w-3.5 h-3.5 fill-current text-green-600" /> Finish
+                    </button>
+                  )}
+                  {["Waiting", "Arrived", "Called"].includes(token.status) && (
+                    <button onClick={() => updateStatus(token.id, "OnHold")} title="Hold"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                      <PauseCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                  {token.status === "OnHold" && (
+                    <button onClick={() => updateStatus(token.id, "Waiting")} className="cms-btn-secondary text-xs px-3 py-1.5">
+                      <RotateCcw className="w-3.5 h-3.5" /> Resume
+                    </button>
+                  )}
+                  {["Waiting", "Arrived"].includes(token.status) && (
+                    <button onClick={() => updateStatus(token.id, "Skipped")} title="Skip"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 transition-colors">
+                      <SkipForward className="w-4 h-4" />
+                    </button>
+                  )}
+                  {token.status === "Skipped" && (
+                    <button onClick={() => updateStatus(token.id, "Called")} className="cms-btn-secondary text-xs px-3 py-1.5">
+                      <RotateCcw className="w-3.5 h-3.5" /> Recall
+                    </button>
+                  )}
+                  {!["Completed", "Abandoned"].includes(token.status) && (
+                    <button onClick={() => updateStatus(token.id, "Abandoned")} title="Abandon (LWBS)"
+                      className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </AnimatePresence>
 
           {displayed.length === 0 && (
-            <div className="py-24 text-center">
-              <Users className="w-20 h-20 text-[#86868b] mx-auto mb-6 opacity-30" />
-              <p className="text-2xl font-bold text-white mb-2">No patients matching filter.</p>
-              <p className="text-[#86868b] text-lg font-medium mt-1">Try changing your filter settings.</p>
+            <div className="py-16 text-center">
+              <Users className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+              <p className="text-gray-800 text-base font-bold mb-1">No tokens match filter</p>
+              <p className="text-gray-400 text-sm">Try changing your doctor or status filters.</p>
             </div>
           )}
         </div>

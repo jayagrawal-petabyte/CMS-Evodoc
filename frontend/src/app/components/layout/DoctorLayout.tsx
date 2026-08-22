@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router";
 import { useAuth } from "../lib/auth-context";
 import { motion, AnimatePresence } from "motion/react";
-import { ClipboardList, Calendar, BarChart3, UserCircle, LogOut, ChevronLeft, ChevronRight, Bell, Search, Menu, Activity } from "lucide-react";
+import { ClipboardList, Calendar, BarChart3, UserCircle, LogOut, ChevronLeft, ChevronRight, Bell, Search, Activity } from "lucide-react";
 
 const navItems = [
   { to: "/doctor", label: "Queue", icon: ClipboardList, end: true },
@@ -25,53 +25,52 @@ export default function DoctorLayout() {
       else setCollapsed(false);
     };
     const handleScroll = () => setScrolled(window.scrollY > 20);
-    
+
     handleResize();
-    window.addEventListener('resize', handleResize);
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  const currentNav = navItems.find((item) => 
+  const currentNav = navItems.find((item) =>
     item.end ? location.pathname === item.to : location.pathname.startsWith(item.to)
   );
   const pageTitle = currentNav?.label || "Clinical";
 
-  return (
-    <div className="flex h-screen overflow-hidden text-[#f5f5f7] selection:bg-[#2997ff] selection:text-white font-sans relative">
-      <div className="apple-bg" />
+  const initials = user?.name
+    ? user.name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "DR";
 
-      {/* DYNAMIC ISLAND (Mobile Only) */}
+  return (
+    <div className="flex h-screen overflow-hidden bg-background font-sans">
+      {/* ── Mobile Dynamic Island ── */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-50 flex justify-center pt-3 px-4 pointer-events-none">
         <motion.div
           layout
           onClick={() => setIslandExpanded(!islandExpanded)}
-          initial={{ borderRadius: 32 }}
           animate={{
-            width: islandExpanded ? "95%" : (scrolled ? 160 : 200),
-            height: islandExpanded ? 140 : 40,
-            borderRadius: islandExpanded ? 32 : 32,
+            width: islandExpanded ? "92%" : scrolled ? 160 : 200,
+            height: islandExpanded ? 148 : 42,
+            borderRadius: 28,
           }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="bg-black border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.8)] overflow-hidden cursor-pointer pointer-events-auto flex flex-col relative"
+          transition={{ type: "spring", damping: 26, stiffness: 220 }}
+          className="bg-[#1a1d23] shadow-[0_8px_30px_rgba(0,0,0,0.25)] overflow-hidden cursor-pointer pointer-events-auto flex flex-col relative"
         >
-          <div className="h-[40px] px-4 flex items-center justify-between w-full flex-shrink-0 absolute top-0 left-0">
+          <div className="h-[42px] px-4 flex items-center justify-between w-full flex-shrink-0 absolute top-0 left-0">
             <AnimatePresence mode="popLayout">
               {!islandExpanded && (
                 <motion.div
-                  initial={{ opacity: 0, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, filter: "blur(4px)" }}
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
                   className="flex items-center justify-between w-full"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full bg-[#32d74b] animate-pulse" />
-                    <span className="text-white text-xs font-semibold tracking-tight">{pageTitle}</span>
+                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                    <span className="text-white text-[13px] font-semibold">{pageTitle}</span>
                   </div>
-                  <Bell className="w-4 h-4 text-[#86868b]" />
+                  <Bell className="w-4 h-4 text-gray-400" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -80,33 +79,26 @@ export default function DoctorLayout() {
           <AnimatePresence>
             {islandExpanded && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="p-4 w-full h-full flex flex-col justify-between pt-3"
+                initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.96 }}
+                className="p-5 pt-4 w-full h-full flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#32d74b] flex items-center justify-center text-black font-bold">
-                      {user?.avatarInitials}
-                    </div>
-                    <div>
-                      <p className="text-white font-semibold text-sm">Dr. {user?.name?.split(' ')[0]}</p>
-                      <p className="text-[#86868b] text-xs">Clinical Portal</p>
-                    </div>
+                <div className="flex items-center gap-3">
+                  <div className="avatar-chip bg-green-100 text-green-700 w-10 h-10 text-sm">{initials}</div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Dr. {user?.name?.split(" ")[0]}</p>
+                    <p className="text-gray-400 text-xs">Clinical Provider</p>
                   </div>
                 </div>
-                
                 <div className="flex items-center justify-between mt-auto bg-white/5 rounded-2xl p-2.5 px-3">
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#32d74b]" />
+                    <div className="w-2 h-2 rounded-full bg-green-400" />
                     <span className="text-white text-xs font-medium">Accepting Patients</span>
                   </div>
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); logout(); navigate("/"); }} 
-                    className="text-white text-sm flex items-center gap-1.5 font-bold bg-[#ff453a] px-4 py-2 rounded-xl shadow-lg shadow-[#ff453a]/30 hover:bg-[#ff6961] transition-all"
+                  <button
+                    onClick={(e) => { e.stopPropagation(); logout(); navigate("/"); }}
+                    className="text-white text-xs flex items-center gap-1.5 font-semibold bg-red-500 px-3 py-1.5 rounded-xl"
                   >
-                    Sign Out <LogOut className="w-4 h-4" />
+                    Sign Out <LogOut className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </motion.div>
@@ -115,9 +107,29 @@ export default function DoctorLayout() {
         </motion.div>
       </div>
 
-      {/* APPLE iOS DOCK / TAB BAR (Mobile Only) */}
-      <div className="md:hidden fixed bottom-6 left-4 right-4 z-50">
-        <div className="apple-glass rounded-[2rem] border border-white/10 p-2 flex justify-between items-center shadow-2xl backdrop-blur-2xl bg-black/40">
+      {/* ── Desktop Sidebar ── */}
+      <motion.aside
+        animate={{ width: collapsed ? 76 : 240 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="hidden md:flex flex-col bg-[#1a1d23] border-r border-white/5 overflow-hidden flex-shrink-0 z-40"
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-5 py-5 h-[68px] border-b border-white/5">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-emerald-600 shadow-[0_0_15px_rgba(16,185,129,0.35)]">
+            <Activity className="w-5 h-5 text-white" />
+          </div>
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.18 }}>
+                <p className="text-white font-bold text-base leading-none whitespace-nowrap">evodoc<span className="text-xs font-normal align-top ml-0.5 text-emerald-400">®</span></p>
+                <p className="text-gray-400 text-[11px] mt-0.5 whitespace-nowrap">Clinical Provider</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Nav with consistent vertical rhythm */}
+        <nav className="flex-1 px-3 pt-4 pb-4 space-y-1.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = item.end ? location.pathname === item.to : location.pathname.startsWith(item.to);
             return (
@@ -125,63 +137,15 @@ export default function DoctorLayout() {
                 key={item.to}
                 to={item.to}
                 end={item.end}
-                className="relative flex-1 py-2 flex flex-col items-center justify-center group"
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all group ${
+                  isActive ? "sidebar-item-active" : "sidebar-item"
+                } ${collapsed ? "justify-center" : ""}`}
+                title={collapsed ? item.label : undefined}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="doctorActiveTab"
-                    className="absolute inset-0 bg-white/10 rounded-2xl -z-10"
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-                <item.icon className={`w-[22px] h-[22px] mb-1 transition-all ${isActive ? "text-white scale-110" : "text-[#86868b] group-hover:text-white"}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-[10px] font-semibold tracking-tight transition-colors ${isActive ? "text-white" : "text-[#86868b]"}`}>
-                  {item.label}
-                </span>
-              </NavLink>
-            );
-          })}
-        </div>
-      </div>
-      
-      {/* Sidebar - macOS style frosted glass (Desktop Only) */}
-      <motion.aside
-        animate={{ width: collapsed ? 80 : 280 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex flex-col border-r border-white/5 overflow-hidden flex-shrink-0 apple-glass z-40"
-      >
-        <div className="flex items-center gap-4 px-6 py-8 h-24">
-          <div className="w-10 h-10 rounded-[0.85rem] flex items-center justify-center flex-shrink-0 bg-[#32d74b] shadow-[0_0_20px_rgba(50,215,75,0.3)]">
-            <Activity className="w-5 h-5 text-black" />
-          </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }}>
-                <p className="text-white font-bold text-lg tracking-tight leading-none whitespace-nowrap">Clinical</p>
-                <p className="text-[#86868b] text-xs font-medium mt-1 whitespace-nowrap">Provider Portal</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <nav className="flex-1 px-4 space-y-2 overflow-y-auto scrollbar-none pt-4">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.to || (item.end ? false : location.pathname.startsWith(item.to));
-            return (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.end}
-                className={`flex items-center gap-4 px-4 py-3 rounded-2xl transition-all group ${
-                    isActive
-                      ? "bg-white/10 text-white"
-                      : "text-[#86868b] hover:bg-white/5 hover:text-white"
-                  }`}
-              >
-                <item.icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-[#86868b]'}`} strokeWidth={isActive ? 2.5 : 2} />
+                <item.icon className={`w-[18px] h-[18px] flex-shrink-0 ${isActive ? "text-emerald-400" : "text-gray-400 group-hover:text-gray-200"}`} strokeWidth={isActive ? 2.5 : 2} />
                 <AnimatePresence>
                   {!collapsed && (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[15px] font-medium tracking-tight whitespace-nowrap">
+                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-[13.5px] font-medium whitespace-nowrap">
                       {item.label}
                     </motion.span>
                   )}
@@ -191,50 +155,89 @@ export default function DoctorLayout() {
           })}
         </nav>
 
-        <div className="p-4 mt-auto">
-          <button onClick={() => { logout(); navigate("/auth/doctor"); }} className={`flex items-center gap-4 px-4 py-3 rounded-2xl text-[#86868b] hover:text-[#ff453a] hover:bg-[#ff453a]/10 transition-colors ${collapsed ? 'justify-center w-full' : 'w-full'}`}>
-            <LogOut className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span className="text-[15px] font-medium tracking-tight">Sign Out</span>}
+        {/* Clinic Status Badge to eliminate dead space */}
+        {!collapsed && (
+          <div className="mx-3 mb-3 p-3 rounded-2xl bg-white/[0.04] border border-white/5">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-[11px] font-semibold text-gray-300">OPD Console Ready</span>
+            </div>
+            <p className="text-[10px] text-gray-500">Live queue sync active</p>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="border-t border-white/5">
+          <button
+            onClick={() => { logout(); navigate("/"); }}
+            className={`flex items-center gap-3 px-3 py-2.5 mx-3 mb-2 mt-2 rounded-xl text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors w-[calc(100%-24px)] cursor-pointer ${collapsed ? "justify-center" : ""}`}
+          >
+            <LogOut className="w-[18px] h-[18px] flex-shrink-0" />
+            {!collapsed && <span className="text-[13px] font-medium">Sign Out</span>}
+          </button>
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="h-9 w-full border-t border-white/5 text-gray-500 hover:text-gray-300 transition-colors flex items-center justify-center cursor-pointer"
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
-
-        <button onClick={() => setCollapsed(!collapsed)} className="h-14 border-t border-white/5 text-[#86868b] hover:text-white transition-colors flex items-center justify-center">
-          {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-        </button>
       </motion.aside>
 
-      <main className="flex-1 flex flex-col min-w-0 relative z-10 bg-transparent pb-32 md:pb-8 pt-16 md:pt-0">
-        {/* Top Header - macOS style (Desktop Only) */}
-        <header className="hidden md:flex h-16 items-center justify-between px-8 border-b border-white/5 apple-glass supports-[backdrop-filter]:bg-transparent">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#86868b]" />
-              <input 
-                type="text" 
-                placeholder="Search patients..." 
-                className="apple-input rounded-full pl-10 pr-4 py-2 text-[15px] text-white placeholder:text-[#86868b] w-72 focus:outline-none"
-              />
-            </div>
+      {/* ── Main content ── */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Top bar */}
+        <header className="hidden md:flex h-[68px] items-center justify-between px-8 bg-white border-b border-gray-100 flex-shrink-0 shadow-sm">
+          <div className="relative">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search patients in queue..."
+              className="cms-input rounded-full pl-10 pr-4 py-2 text-sm w-72 focus:outline-none"
+            />
           </div>
-          
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-[#32d74b] shadow-[0_0_10px_#32d74b]" />
-              <span className="text-[#86868b] text-sm font-medium tracking-tight">Online</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-50 border border-green-100">
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-semibold text-green-700">Consultation Ready</span>
             </div>
-            <button className="relative w-10 h-10 rounded-full flex items-center justify-center text-[#86868b] hover:text-white transition-colors">
-              <Bell className="w-5 h-5" />
-            </button>
-            <div className="w-10 h-10 rounded-full bg-[#2c2c2e] flex items-center justify-center text-white font-semibold text-sm border border-white/10">
-              {user?.avatarInitials}
+            <div className="flex items-center gap-2.5">
+              <div className="avatar-chip bg-gray-100 text-gray-700 text-xs">{initials}</div>
+              <div>
+                <p className="text-gray-800 font-semibold text-sm leading-none">Dr. {user?.name?.split(" ")[0] ?? "Doctor"}</p>
+                <p className="text-gray-400 text-[11px] mt-0.5">Clinical Provider</p>
+              </div>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto p-4 md:p-10 lg:p-12 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-          <Outlet />
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto pt-14 md:pt-0 pb-28 md:pb-0">
+          <div className="p-4 md:p-8 max-w-[1400px] mx-auto">
+            <Outlet />
+          </div>
+        </main>
+      </div>
+
+      {/* ── Mobile tab bar ── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-lg">
+        <div className="flex justify-around items-center h-16 px-2">
+          {navItems.map((item) => {
+            const isActive = item.end ? location.pathname === item.to : location.pathname.startsWith(item.to);
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2"
+              >
+                <item.icon className={`w-5 h-5 ${isActive ? "text-gray-900" : "text-gray-400"}`} strokeWidth={isActive ? 2.5 : 2} />
+                <span className={`text-[10px] font-semibold ${isActive ? "text-gray-900" : "text-gray-400"}`}>{item.label}</span>
+              </NavLink>
+            );
+          })}
         </div>
-      </main>
+      </div>
     </div>
   );
 }

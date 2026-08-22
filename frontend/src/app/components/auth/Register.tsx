@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
 import { motion } from "motion/react";
-import { Activity, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CheckCircle2, ArrowRight, ShieldCheck, Sparkles, HeartPulse } from "lucide-react";
 import { apiPost } from "../lib/api";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -14,7 +14,10 @@ export default function Register() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
 
-  function update(k: string, v: string) { setForm((f) => ({ ...f, [k]: v })); setError(""); }
+  function update(k: string, v: string) {
+    setForm((f) => ({ ...f, [k]: v }));
+    setError("");
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -34,9 +37,8 @@ export default function Register() {
         bloodGroup: form.bloodGroup || undefined,
       });
       setSuccess(true);
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate("/auth/patient"), 2000);
     } catch (err: any) {
-      // 409 = phone already registered; other = validation / backend down
       setError(err?.message ?? "Registration failed. Is the backend running?");
     } finally {
       setLoading(false);
@@ -44,128 +46,166 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden text-foreground bg-black selection:bg-primary selection:text-white">
-      <div className="apple-bg" />
+    <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center p-4 md:p-8 font-sans selection:bg-[#111827] selection:text-white">
+      {/* ── Main Split Card Container ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 15, scale: 0.99 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-[1000px] bg-white rounded-3xl overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.07)] border border-[#e8e4dc] grid grid-cols-1 md:grid-cols-12 min-h-[620px]"
+      >
+        {/* ── Left: Form Panel (7 cols) ── */}
+        <div className="md:col-span-7 p-8 sm:p-10 md:p-12 flex flex-col justify-between bg-white">
+          <div>
+            {/* Top Brand Logo */}
+            <div className="flex items-center justify-between mb-6">
+              <Link to="/" className="flex items-center gap-1.5 group">
+                <span className="text-xl font-bold tracking-tight text-gray-900">
+                  evodoc<span className="text-xs font-normal align-top ml-0.5">®</span>
+                </span>
+                <span className="text-[11px] font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100/80 ml-2">
+                  Patient Registration
+                </span>
+              </Link>
+              <Link to="/" className="text-xs font-medium text-gray-400 hover:text-gray-900 transition-colors">
+                ← Home
+              </Link>
+            </div>
 
-      {/* Top Navbar mimic */}
-      <nav className="fixed top-0 left-0 right-0 h-14 flex items-center justify-between px-8 z-50">
-        <div className="flex items-center gap-2">
-          <Activity className="w-5 h-5 text-white" />
-          <span className="text-white font-semibold text-sm tracking-tight">MediCare Plus</span>
-        </div>
-        <div className="flex items-center gap-8 text-xs font-medium text-[#86868b]">
-          <Link to="/" className="hover:text-white transition-colors">Sign In</Link>
-        </div>
-      </nav>
+            {/* Visually Grouped Headline Block */}
+            <div className="mb-6">
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-gray-900 mb-1.5">
+                Create your Health ID
+              </h1>
+              <p className="text-sm text-gray-500 font-normal">
+                One unified profile for instant clinic tokens, EMR prescriptions, and vitals
+              </p>
+            </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 pt-24 pb-12 z-10">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="w-full max-w-[460px]"
-        >
-          <div className="text-center mb-10">
-            <h1 className="text-4xl font-semibold tracking-tight mb-2 text-white">Create Account</h1>
-            <p className="text-base text-[#86868b] font-medium tracking-tight">
-              One ID for all your health needs.
-            </p>
-          </div>
-
-          <div className="">
             {success ? (
-              <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12 space-y-4">
-                <div className="w-24 h-24 rounded-full bg-[#32d74b]/10 border border-[#32d74b]/30 flex items-center justify-center mx-auto text-5xl text-[#32d74b]">✓</div>
-                <h2 className="text-3xl font-bold tracking-tight text-white">Welcome</h2>
-                <p className="text-[#86868b] text-lg font-medium">Redirecting to sign in...</p>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-12 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-green-50 text-green-600 flex items-center justify-center mx-auto border border-green-200">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900">Account Created Successfully</h2>
+                <p className="text-gray-500 text-sm">Redirecting to sign in...</p>
               </motion.div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="space-y-0 rounded-[1.25rem] overflow-hidden border border-white/10 apple-card">
-                  <div className="relative border-b border-white/5">
-                    <input
-                      value={form.name}
-                      onChange={(e) => update("name", e.target.value)}
-                      placeholder="Full Name"
-                      className="w-full bg-transparent px-5 py-4 text-white placeholder:text-[#86868b] focus:outline-none transition-all text-[17px]"
-                      required
-                    />
-                  </div>
+              <form onSubmit={handleSubmit} className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Full name
+                  </label>
+                  <input
+                    value={form.name}
+                    onChange={(e) => update("name", e.target.value)}
+                    placeholder="e.g. Maya Sharma"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 transition-all shadow-sm"
+                    required
+                  />
+                </div>
 
-                  <div className="relative border-b border-white/5">
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={(e) => update("phone", e.target.value)}
-                      placeholder="Mobile Number"
-                      className="w-full bg-transparent px-5 py-4 text-white placeholder:text-[#86868b] focus:outline-none transition-all text-[17px]"
-                      required
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Mobile number
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => update("phone", e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 transition-all shadow-sm"
+                    required
+                  />
+                </div>
 
-                  <div className="relative border-b border-white/5">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Password
+                  </label>
+                  <div className="relative">
                     <input
                       type={showPass ? "text" : "password"}
                       value={form.password}
                       onChange={(e) => update("password", e.target.value)}
-                      placeholder="Password"
-                      className="w-full bg-transparent px-5 py-4 text-white placeholder:text-[#86868b] focus:outline-none transition-all text-[17px]"
+                      placeholder="At least 6 characters"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-900 focus:ring-4 focus:ring-gray-900/5 transition-all shadow-sm pr-11"
                       required
                     />
-                    <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-5 top-1/2 -translate-y-1/2 text-[#86868b] hover:text-white">
-                      {showPass ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    <button
+                      type="button"
+                      onClick={() => setShowPass(!showPass)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
+                    >
+                      {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                </div>
 
-                  <div className="flex border-b border-white/5 divide-x divide-white/5">
-                    <div className="relative flex-1">
-                      <input
-                        type="date"
-                        value={form.dob}
-                        onChange={(e) => update("dob", e.target.value)}
-                        className="w-full bg-transparent px-5 py-4 text-white placeholder:text-[#86868b] focus:outline-none transition-all text-[17px] appearance-none"
-                        required
-                        style={{ colorScheme: "dark" }}
-                      />
-                    </div>
-                    <div className="relative flex-1">
-                      <select
-                        value={form.gender}
-                        onChange={(e) => update("gender", e.target.value)}
-                        className="w-full h-full bg-transparent px-5 py-4 text-white focus:outline-none transition-all text-[17px] appearance-none"
-                      >
-                        {["Male", "Female", "Other"].map((g) => <option key={g} value={g} className="bg-black text-white">{g}</option>)}
-                      </select>
-                    </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Date of birth
+                    </label>
+                    <input
+                      type="date"
+                      value={form.dob}
+                      onChange={(e) => update("dob", e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-gray-900 shadow-sm"
+                      required
+                    />
                   </div>
-
-                  <div className="relative">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">
+                      Gender
+                    </label>
                     <select
-                      value={form.bloodGroup}
-                      onChange={(e) => update("bloodGroup", e.target.value)}
-                      className="w-full bg-transparent px-5 py-4 text-[#86868b] focus:outline-none transition-all text-[17px] appearance-none"
+                      value={form.gender}
+                      onChange={(e) => update("gender", e.target.value)}
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-gray-900 shadow-sm cursor-pointer"
                     >
-                      <option value="" disabled className="bg-black text-white">Select Blood Group</option>
-                      {bloodGroups.map((b) => <option key={b} value={b} className="bg-black text-white">{b}</option>)}
+                      {["Male", "Female", "Other"].map((g) => (
+                        <option key={g} value={g}>{g}</option>
+                      ))}
                     </select>
                   </div>
                 </div>
 
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Blood group
+                  </label>
+                  <select
+                    value={form.bloodGroup}
+                    onChange={(e) => update("bloodGroup", e.target.value)}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-gray-900 shadow-sm cursor-pointer"
+                  >
+                    {bloodGroups.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
+                </div>
+
                 {error && (
-                  <p className="text-[#ff453a] text-sm text-center font-medium px-2">{error}</p>
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-red-600 text-xs font-medium text-center bg-red-50 border border-red-100 py-2 px-3 rounded-xl"
+                  >
+                    {error}
+                  </motion.div>
                 )}
 
                 <div className="pt-2">
                   <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full flex items-center justify-center gap-2 py-4 rounded-full font-semibold text-[17px] transition-all ${loading ? "bg-[#2c2c2e] text-[#86868b] cursor-not-allowed" : "bg-white text-black hover:scale-[1.02] active:scale-[0.98]"}`}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-full font-semibold text-sm bg-gray-900 text-white hover:bg-black active:scale-[0.99] transition-all shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                   >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      "Agree & Continue"
+                      <>Register & Create ID <ArrowRight className="w-4 h-4" /></>
                     )}
                   </button>
                 </div>
@@ -173,18 +213,43 @@ export default function Register() {
             )}
           </div>
 
+          {/* Bottom Footer */}
           {!success && (
-            <div className="mt-12 text-center border-t border-white/10 pt-6">
-              <p className="text-[#86868b] text-sm font-medium">
-                Already have an account?{" "}
-                <Link to="/" className="text-primary hover:underline">
-                  Sign in here.
+            <div className="mt-6 pt-4 border-t border-gray-100 text-center text-xs text-gray-500">
+              <p>
+                Already have a Health ID?{" "}
+                <Link to="/auth/patient" className="text-blue-600 font-semibold hover:underline">
+                  Sign in here
                 </Link>
               </p>
             </div>
           )}
-        </motion.div>
-      </div>
+        </div>
+
+        {/* ── Right: Illustrated Brand Panel (5 cols) ── */}
+        <div className="hidden md:col-span-5 md:flex flex-col items-center justify-center p-8 lg:p-10 bg-[#e8f1fd] text-center relative overflow-hidden">
+          <div className="w-48 h-48 relative mb-6 flex items-center justify-center">
+            <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+              <circle cx="120" cy="120" r="85" fill="#d4e6fc" />
+              <rect x="75" y="65" width="90" height="90" rx="22" fill="#ffffff" className="drop-shadow-md" />
+              <path d="M120 85 L120 125 M100 105 L140 105" stroke="#2563eb" strokeWidth="6" strokeLinecap="round" />
+              <circle cx="65" cy="85" r="5" fill="#3b82f6" />
+              <circle cx="175" cy="80" r="4" fill="#60a5fa" />
+              <circle cx="180" cy="140" r="6" fill="#93c5fd" />
+              <path d="M75 190 L95 190 L105 175 L115 205 L125 180 L135 195 L145 190 L165 190" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+
+          <div className="relative z-10 max-w-xs">
+            <h3 className="font-serif text-xl font-bold text-gray-900 mb-1.5">
+              Instant Patient Onboarding
+            </h3>
+            <p className="text-xs text-gray-600 leading-relaxed font-normal">
+              Secure digital health records, allergy profiles, and priority queue appointments.
+            </p>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 }

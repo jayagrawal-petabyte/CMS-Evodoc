@@ -27,63 +27,68 @@ export default function DoctorCalendar() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto space-y-10">
+    <div className="max-w-4xl mx-auto space-y-8 py-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="apple-hero-text text-5xl mb-2 text-white">Calendar.</h1>
-          <p className="text-[#86868b] font-medium text-xl">{format(selectedDate, "MMMM yyyy")}</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#32d74b]">Schedule Planner</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">Doctor Calendar</h1>
+          <p className="text-[#8e8e93] font-medium text-xs mt-0.5">{format(selectedDate, "MMMM yyyy")}</p>
         </div>
-        <button className="bg-white text-black px-6 py-2.5 rounded-full font-bold text-[15px] flex items-center gap-2 hover:scale-[1.02]">
-          <CalendarIcon className="w-5 h-5" /> Today
+        <button onClick={() => setSelectedDate(today)} className="bg-[#32d74b] text-black px-4 py-2 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 hover:bg-[#2bc242] transition-all shadow-md shadow-[#32d74b]/20">
+          <CalendarIcon className="w-4 h-4" /> Today
         </button>
       </div>
 
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none snap-x">
+      <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none snap-x">
         {availableDates.map((date) => {
           const isSelected = date.getTime() === selectedDate.getTime();
           return (
             <button
               key={date.toISOString()}
               onClick={() => setSelectedDate(date)}
-              className={`snap-center flex-shrink-0 w-20 h-[104px] rounded-3xl flex flex-col items-center justify-center transition-all ${isSelected ? "bg-white text-black shadow-lg scale-105" : "apple-input text-white hover:border-white/20"}`}
+              className={`snap-center flex-shrink-0 w-20 h-24 rounded-2xl flex flex-col items-center justify-center transition-all ${
+                isSelected 
+                  ? "bg-white text-black shadow-xl scale-105 font-bold" 
+                  : "apple-glass text-white border border-white/10 hover:border-white/20"
+              }`}
             >
-              <span className={`text-sm font-semibold mb-1 ${isSelected ? "text-black/60" : "text-[#86868b]"}`}>{days[date.getDay()]}</span>
-              <span className="text-3xl font-bold tracking-tight">{format(date, "d")}</span>
+              <span className={`text-[11px] font-bold uppercase mb-0.5 ${isSelected ? "text-black/70" : "text-[#8e8e93]"}`}>{days[date.getDay()]}</span>
+              <span className="text-2xl font-black">{format(date, "d")}</span>
             </button>
           );
         })}
       </div>
 
       <div>
-        <div className="flex items-center gap-2 mb-4 px-2">
-          <Clock className="w-5 h-5 text-[#32d74b]" />
-          <h2 className="text-[15px] font-semibold text-[#86868b] uppercase tracking-widest">Appointments</h2>
+        <div className="flex items-center gap-2 mb-4 px-1">
+          <Clock className="w-4 h-4 text-[#32d74b]" />
+          <h2 className="text-xs font-bold text-[#8e8e93] uppercase tracking-widest">Scheduled Consultations ({dayApps.length})</h2>
         </div>
         
         {dayApps.length > 0 ? (
-          <div className="apple-card overflow-hidden divide-y divide-white/5 border border-white/10">
+          <div className="space-y-3">
             {dayApps.map((appt) => (
-              <div key={appt.id} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors group cursor-pointer">
-                <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 rounded-2xl bg-black border border-white/5 flex items-center justify-center text-white font-bold text-lg shadow-md">
+              <div key={appt.id} className="interactive-card p-4 md:p-5 flex items-center justify-between cursor-pointer group">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white font-black text-sm shadow-md">
                     {format(new Date(appt.slotStart), "HH:mm")}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold tracking-tight text-white mb-1">{appt.patientName}</h3>
-                    <p className="text-[#86868b] text-[15px] font-medium flex items-center gap-2">
+                    <h3 className="text-base font-bold tracking-tight text-white mb-0.5">{appt.patientName}</h3>
+                    <p className="text-[#8e8e93] text-xs font-medium flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full bg-[#32d74b]" /> {appt.status}
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="w-6 h-6 text-[#86868b] group-hover:text-white transition-colors hidden md:block" />
+                <ChevronRight className="w-4 h-4 text-[#8e8e93] group-hover:text-white transition-colors" />
               </div>
             ))}
           </div>
         ) : (
-          <div className="apple-card p-16 text-center border border-dashed border-white/10">
-            <Users className="w-16 h-16 text-[#86868b] mx-auto mb-4 opacity-50" />
-            <h2 className="text-2xl font-bold tracking-tight text-white mb-2">No appointments</h2>
-            <p className="text-[#86868b] font-medium text-lg">Your schedule is clear for this day.</p>
+          <div className="apple-card p-12 text-center">
+            <Users className="w-12 h-12 text-[#8e8e93] mx-auto mb-3 opacity-40" />
+            <h2 className="text-lg font-bold tracking-tight text-white mb-1">No appointments scheduled</h2>
+            <p className="text-[#8e8e93] font-medium text-xs">Your calendar is completely open for this day.</p>
           </div>
         )}
       </div>

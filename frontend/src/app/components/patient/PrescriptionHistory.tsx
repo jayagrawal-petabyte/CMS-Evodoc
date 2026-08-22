@@ -53,72 +53,76 @@ export default function PrescriptionHistory() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:py-16 text-foreground font-sans min-h-screen">
-      <div className="mb-10">
-        <h1 className="apple-hero-text text-4xl tracking-tight text-white">Records.</h1>
-        <p className="text-[#86868b] font-medium text-lg mt-2">Your complete medical history and documents.</p>
+    <div className="max-w-4xl mx-auto py-8 text-foreground font-sans min-h-screen space-y-8">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#2997ff]">Health Records</p>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">Medical History</h1>
+        <p className="text-[#8e8e93] font-medium text-sm mt-1">Access verified prescriptions, diagnoses, and pharmacy notes.</p>
       </div>
 
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
         <div>
-          <div className="flex items-center gap-2 mb-3 px-2">
-            <FileText className="w-5 h-5 text-[#2997ff]" />
-            <h2 className="text-[15px] font-semibold text-[#86868b] uppercase tracking-widest">Clinical Documents</h2>
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <FileText className="w-4 h-4 text-[#2997ff]" />
+            <h2 className="text-xs font-bold text-[#8e8e93] uppercase tracking-widest">Clinical Documents ({myRx.length})</h2>
           </div>
 
           {loading ? (
-            <div className="apple-card p-12 text-center text-[#86868b]">Loading…</div>
+            <div className="apple-card p-10 text-center text-[#8e8e93] text-sm font-medium">Loading documents…</div>
           ) : myRx.length > 0 ? (
-            <div className="apple-card overflow-hidden divide-y divide-white/5 border border-white/10">
+            <div className="space-y-4">
               {myRx.map((rx) => (
-                <div key={rx.id} className="p-6 hover:bg-white/5 transition-colors group">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-[#2997ff]/20 text-[#2997ff] flex items-center justify-center border border-[#2997ff]/30 shadow-lg">
+                <div key={rx.id} className="interactive-card p-6">
+                  <div className="flex items-start justify-between mb-4 border-b border-white/5 pb-4">
+                    <div className="flex items-center gap-3.5">
+                      <div className="w-12 h-12 rounded-2xl bg-[#2997ff]/15 text-[#2997ff] flex items-center justify-center border border-[#2997ff]/30 shadow-md">
                         <FileText className="w-6 h-6" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold tracking-tight text-white">{rx.diagnosis}</h3>
-                        <p className="text-[#86868b] text-[15px] font-medium">{rx.doctorName}</p>
+                        <h3 className="text-lg font-bold tracking-tight text-white">{rx.diagnosis}</h3>
+                        <p className="text-xs font-semibold text-[#8e8e93]">{rx.doctorName}</p>
                       </div>
                     </div>
-                    <p className="text-[#86868b] font-medium text-sm">
+                    <span className="text-xs font-bold text-[#8e8e93] bg-white/5 px-3 py-1 rounded-full border border-white/5">
                       {rx.createdAt
                         ? new Date(rx.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
                         : ""}
-                    </p>
+                    </span>
                   </div>
 
-                  <div className="pl-16 space-y-2">
-                    {rx.medicines.map((m, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
-                        <div>
-                          <p className="text-white font-semibold text-[15px]">{m.name}</p>
-                          <p className="text-[#86868b] text-[13px] font-medium">
-                            {[m.dosage, m.duration].filter(Boolean).join(" · ")}
-                          </p>
+                  <div className="space-y-2 mb-4">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#8e8e93]">Prescribed Medications</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {rx.medicines.map((m, i) => (
+                        <div key={i} className="apple-glass p-3 rounded-xl flex items-center justify-between border border-white/5">
+                          <div>
+                            <p className="text-white font-bold text-xs">{m.name}</p>
+                            <p className="text-[#8e8e93] text-[11px] font-medium">
+                              {[m.dosage, m.duration].filter(Boolean).join(" · ")}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="pl-16 mt-4 flex items-center gap-4">
+                  <div className="flex items-center justify-end pt-2">
                     <button
                       onClick={() => handleDownload(rx.id)}
                       disabled={downloading === rx.id}
-                      className="flex items-center gap-2 text-[#2997ff] text-[13px] font-bold uppercase tracking-widest hover:opacity-80 disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-[#2997ff] text-xs font-bold uppercase tracking-wider transition-all border border-white/10 disabled:opacity-50"
                     >
-                      <Download className="w-4 h-4" /> {downloading === rx.id ? "Loading…" : "Download PDF"}
+                      <Download className="w-3.5 h-3.5" /> {downloading === rx.id ? "Generating PDF..." : "Download PDF"}
                     </button>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="apple-card p-12 text-center">
-              <Activity className="w-16 h-16 text-[#86868b] mx-auto mb-4 opacity-50" />
-              <h2 className="text-2xl font-bold tracking-tight text-white mb-2">No records found</h2>
-              <p className="text-[#86868b] font-medium text-lg">You don't have any clinical documents yet.</p>
+            <div className="apple-card p-10 text-center">
+              <Activity className="w-12 h-12 text-[#8e8e93] mx-auto mb-3 opacity-40" />
+              <h2 className="text-xl font-bold tracking-tight text-white mb-1">No records found</h2>
+              <p className="text-[#8e8e93] font-medium text-xs">You don't have any clinical documents or prescriptions yet.</p>
             </div>
           )}
         </div>

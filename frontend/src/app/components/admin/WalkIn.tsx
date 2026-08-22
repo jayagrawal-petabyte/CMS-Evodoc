@@ -53,7 +53,6 @@ export default function WalkIn() {
   }
 
   function registerAndAssign() {
-    // Creation actually happens on assign (/tokens/walkin find-or-create) — carry the form forward.
     setFoundPatient({ name: form.name, phone: form.phone, age: form.age, gender: form.gender });
     setStep("assign");
   }
@@ -89,167 +88,170 @@ export default function WalkIn() {
   }
 
   return (
-    <div className="p-6 max-w-xl space-y-6">
+    <div className="max-w-xl mx-auto py-4 space-y-6">
       <div>
-        <h1 className="text-[#daeeff]">Walk-in Registration</h1>
-        <p className="text-[#4a7a94] text-sm">Register walk-in patients and assign queue tokens</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#bf5af2]">Reception Desk</p>
+        <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">Walk-in Dispatch</h1>
+        <p className="text-[#8e8e93] text-xs font-medium mt-0.5">Quickly onboard walk-in patients and assign queue tokens</p>
       </div>
 
       {/* Step indicator */}
       <div className="flex items-center gap-2">
         {["lookup", "details", "assign", "done"].filter((s) => isNew || s !== "details").map((s, i, arr) => (
-          <div key={s} className="flex items-center gap-2">
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
-              s === step ? "bg-[rgba(167,139,250,0.2)] border border-[rgba(167,139,250,0.4)] text-[#a78bfa]" :
-              arr.indexOf(s) < arr.indexOf(step) ? "bg-[rgba(0,229,160,0.15)] border border-[rgba(0,229,160,0.3)] text-[#00e5a0]" :
-              "bg-[rgba(0,212,255,0.05)] border border-[rgba(0,212,255,0.1)] text-[#4a7a94]"
+          <div key={s} className="flex items-center gap-2 flex-1">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-xs font-black transition-all ${
+              s === step ? "bg-[#bf5af2] text-white shadow-[0_0_15px_rgba(191,90,242,0.4)]" :
+              arr.indexOf(s) < arr.indexOf(step) ? "bg-[#32d74b]/15 text-[#32d74b] border border-[#32d74b]/30" :
+              "bg-white/5 border border-white/10 text-[#8e8e93]"
             }`}>
-              {arr.indexOf(s) < arr.indexOf(step) ? <Check className="w-3.5 h-3.5" /> : i + 1}
+              {arr.indexOf(s) < arr.indexOf(step) ? <Check className="w-4 h-4" /> : i + 1}
             </div>
-            {i < arr.length - 1 && <div className="flex-1 h-px bg-[rgba(0,212,255,0.1)]" />}
+            {i < arr.length - 1 && <div className="flex-1 h-0.5 bg-white/10" />}
           </div>
         ))}
       </div>
 
-      <motion.div key={step} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="rounded-xl border border-[rgba(0,212,255,0.12)] bg-[#071428] p-6">
+      <motion.div key={step} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="apple-card p-6 md:p-8">
 
         {step === "lookup" && (
           <div className="space-y-5">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(167,139,250,0.1)] flex items-center justify-center">
-                <Search className="w-5 h-5 text-[#a78bfa]" />
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-2xl bg-[#bf5af2]/15 border border-[#bf5af2]/30 flex items-center justify-center">
+                <Search className="w-5 h-5 text-[#bf5af2]" />
               </div>
               <div>
-                <h3 className="text-[#daeeff]">Patient Lookup</h3>
-                <p className="text-[#4a7a94] text-sm">Search by mobile number</p>
+                <h3 className="text-white text-lg font-bold">Patient Lookup</h3>
+                <p className="text-[#8e8e93] text-xs font-medium">Search by 10-digit mobile number</p>
               </div>
             </div>
             <div>
-              <label className="block text-[#7ec8e3] text-sm mb-2">Mobile Number</label>
+              <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-2">Mobile Number</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4a7a94]" />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8e8e93]" />
                 <input
                   value={phone} onChange={(e) => setPhone(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && phone.length >= 10 && lookup()}
-                  placeholder="10-digit number" maxLength={10}
-                  className="w-full bg-[#0a1930] border border-[rgba(0,212,255,0.15)] rounded-xl pl-10 pr-4 py-3 text-[#daeeff] placeholder-[#4a7a94] focus:outline-none focus:border-[#00d4ff] transition-colors"
+                  placeholder="Enter 10-digit phone" maxLength={10}
+                  className="w-full apple-input rounded-2xl pl-10 pr-4 py-3 text-white text-sm focus:outline-none placeholder:text-[#555]"
                 />
               </div>
             </div>
-            <div className="flex gap-2">
+            <div className="pt-2">
               <button onClick={lookup} disabled={phone.length < 10 || loading}
-                className="flex-1 py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2"
-                style={{ background: phone.length >= 10 ? "linear-gradient(135deg, #a78bfa, #7c3aed)" : "#0a1930", color: phone.length >= 10 ? "white" : "#4a7a94" }}>
-                {loading ? <div className="w-4 h-4 border-2 border-[#4a7a94] border-t-transparent rounded-full animate-spin" /> : <><Search className="w-4 h-4" /> Look Up</>}
+                className="w-full py-3 rounded-2xl font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 bg-[#bf5af2] text-white hover:bg-[#a844dc] disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(191,90,242,0.3)]">
+                {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Search className="w-4 h-4" /> Search Patient Record</>}
               </button>
             </div>
-            <p className="text-[#4a7a94] text-xs text-center">If patient isn't found, you'll be able to register them</p>
+            <p className="text-[#8e8e93] text-xs text-center font-medium">New patients will automatically transition to rapid registration</p>
           </div>
         )}
 
         {step === "details" && (
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-[rgba(0,229,160,0.1)] flex items-center justify-center">
-                <UserPlus className="w-5 h-5 text-[#00e5a0]" />
+              <div className="w-12 h-12 rounded-2xl bg-[#32d74b]/15 border border-[#32d74b]/30 flex items-center justify-center">
+                <UserPlus className="w-5 h-5 text-[#32d74b]" />
               </div>
               <div>
-                <h3 className="text-[#daeeff]">New Patient</h3>
-                <p className="text-[#4a7a94] text-sm">Not found — register them</p>
+                <h3 className="text-white text-lg font-bold">New Patient Enrollment</h3>
+                <p className="text-[#8e8e93] text-xs font-medium">No prior record found for this number</p>
               </div>
             </div>
             <div>
-              <label className="block text-[#7ec8e3] text-sm mb-1.5">Full Name *</label>
-              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Patient's name"
-                className="w-full bg-[#0a1930] border border-[rgba(0,212,255,0.15)] rounded-xl px-4 py-2.5 text-[#daeeff] placeholder-[#4a7a94] text-sm focus:outline-none focus:border-[#00d4ff] transition-colors" />
+              <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-1.5">Full Name *</label>
+              <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Patient full name"
+                className="w-full apple-input rounded-2xl px-4 py-2.5 text-white text-sm focus:outline-none placeholder:text-[#555]" />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-[#7ec8e3] text-sm mb-1.5">Mobile</label>
+                <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-1.5">Mobile</label>
                 <input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} readOnly
-                  className="w-full bg-[#0a1930] border border-[rgba(0,212,255,0.1)] rounded-xl px-4 py-2.5 text-[#daeeff] text-sm opacity-70" />
+                  className="w-full apple-input rounded-2xl px-4 py-2.5 text-white text-sm opacity-60 cursor-not-allowed" />
               </div>
               <div>
-                <label className="block text-[#7ec8e3] text-sm mb-1.5">Age</label>
+                <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-1.5">Age</label>
                 <input value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} placeholder="e.g. 35" type="number"
-                  className="w-full bg-[#0a1930] border border-[rgba(0,212,255,0.15)] rounded-xl px-4 py-2.5 text-[#daeeff] placeholder-[#4a7a94] text-sm focus:outline-none focus:border-[#00d4ff] transition-colors" />
+                  className="w-full apple-input rounded-2xl px-4 py-2.5 text-white text-sm focus:outline-none placeholder:text-[#555]" />
               </div>
             </div>
             <div>
-              <label className="block text-[#7ec8e3] text-sm mb-1.5">Gender</label>
+              <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-1.5">Gender</label>
               <div className="flex gap-2">
                 {["Male", "Female", "Other"].map((g) => (
                   <button key={g} onClick={() => setForm({ ...form, gender: g })}
-                    className={`flex-1 py-2 rounded-lg text-sm transition-colors ${form.gender === g ? "bg-[rgba(167,139,250,0.15)] border border-[rgba(167,139,250,0.3)] text-[#a78bfa]" : "border border-[rgba(0,212,255,0.1)] text-[#4a7a94] hover:text-[#7ec8e3]"}`}>
+                    className={`flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors ${form.gender === g ? "bg-[#bf5af2] text-white" : "apple-glass text-[#8e8e93] border border-white/10 hover:text-white"}`}>
                     {g}
                   </button>
                 ))}
               </div>
             </div>
             <button onClick={registerAndAssign} disabled={!form.name || loading}
-              className="w-full py-3 rounded-xl font-medium text-white transition-all flex items-center justify-center gap-2"
-              style={{ background: form.name ? "linear-gradient(135deg, #a78bfa, #7c3aed)" : "#0a1930", color: form.name ? "white" : "#4a7a94" }}>
-              {loading ? <div className="w-4 h-4 border-2 border-[#4a7a94] border-t-transparent rounded-full animate-spin" /> : <>Register & Continue <ArrowRight className="w-4 h-4" /></>}
+              className="w-full py-3 rounded-2xl font-bold text-xs uppercase tracking-wider text-white transition-all flex items-center justify-center gap-2 bg-[#bf5af2] hover:bg-[#a844dc] disabled:opacity-40 shadow-[0_0_20px_rgba(191,90,242,0.3)] mt-2">
+              {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <>Continue to Specialist Assign <ArrowRight className="w-4 h-4" /></>}
             </button>
           </div>
         )}
 
         {step === "assign" && foundPatient && (
           <div className="space-y-5">
-            <h3 className="text-[#daeeff]">Assign to Doctor</h3>
+            <div>
+              <h3 className="text-white text-lg font-bold">Assign to Specialist</h3>
+              <p className="text-[#8e8e93] text-xs font-medium">Select an on-duty clinician for immediate queuing</p>
+            </div>
+            
             {/* Patient summary */}
-            <div className="rounded-xl p-3 border border-[rgba(0,229,160,0.15)] bg-[rgba(0,229,160,0.04)] flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[rgba(0,229,160,0.1)] flex items-center justify-center text-[#00e5a0] text-sm font-semibold flex-shrink-0">
-                {foundPatient.name.split(" ").map((n) => n[0]).join("").toUpperCase()}
+            <div className="apple-glass rounded-2xl p-3.5 border border-white/10 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#bf5af2]/20 text-[#bf5af2] flex items-center justify-center text-sm font-black flex-shrink-0">
+                {foundPatient.name.split(" ").map((n: string) => n[0]).join("").toUpperCase()}
               </div>
               <div>
-                <p className="text-[#daeeff] text-sm">{foundPatient.name}</p>
-                <p className="text-[#4a7a94] text-xs">{foundPatient.phone} · {isNew ? "New patient" : `Age ${foundPatient.age}`}</p>
+                <p className="text-white text-sm font-bold">{foundPatient.name}</p>
+                <p className="text-[#8e8e93] text-xs font-medium">{foundPatient.phone} · {isNew ? "New patient" : `Age: ${foundPatient.age || "—"}`}</p>
               </div>
-              {!isNew && <span className="ml-auto px-2 py-0.5 rounded-full bg-[rgba(0,229,160,0.1)] text-[#00e5a0] text-xs">Existing</span>}
-              {isNew && <span className="ml-auto px-2 py-0.5 rounded-full bg-[rgba(251,191,36,0.1)] text-[#fbbf24] text-xs">New</span>}
+              <span className={`ml-auto px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${isNew ? "bg-[#ff9f0a]/10 text-[#ff9f0a] border border-[#ff9f0a]/20" : "bg-[#32d74b]/10 text-[#32d74b] border border-[#32d74b]/20"}`}>
+                {isNew ? "New" : "Verified"}
+              </span>
             </div>
 
             <div>
-              <label className="block text-[#7ec8e3] text-sm mb-2">Select Doctor</label>
+              <label className="block text-xs font-bold text-[#8e8e93] uppercase tracking-wider mb-2">Available Doctors</label>
               <div className="space-y-2">
                 {doctors.map((doc) => (
                   <button key={doc.id} onClick={() => setSelectedDoctor(doc.id)}
-                    className={`w-full flex items-center gap-3 p-3 rounded-xl border transition-all text-left ${selectedDoctor === doc.id ? "bg-[rgba(167,139,250,0.08)] border-[rgba(167,139,250,0.3)]" : "border-[rgba(0,212,255,0.1)] hover:border-[rgba(0,212,255,0.2)]"}`}>
-                    <div className="w-9 h-9 rounded-xl bg-[rgba(0,212,255,0.08)] flex items-center justify-center text-[#00d4ff] text-sm font-semibold flex-shrink-0">
-                      {doc.name.replace("Dr. ", "").split(" ").map((n) => n[0]).join("")}
+                    className={`w-full flex items-center gap-3 p-3 rounded-2xl border transition-all text-left ${selectedDoctor === doc.id ? "bg-[#bf5af2]/15 border-[#bf5af2]/40 shadow-[0_0_15px_rgba(191,90,242,0.15)]" : "apple-glass border-white/10 hover:border-white/20"}`}>
+                    <div className="w-9 h-9 rounded-xl bg-white/5 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      {doc.name.replace("Dr. ", "").split(" ").map((n: string) => n[0]).join("")}
                     </div>
-                    <div className="flex-1">
-                      <p className="text-[#daeeff] text-sm">{doc.name}</p>
-                      <p className="text-[#4a7a94] text-xs">{doc.specialization} · {doc.todayStats.waiting} waiting</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white text-sm font-bold truncate">{doc.name}</p>
+                      <p className="text-[#8e8e93] text-xs font-medium">{doc.specialization}</p>
                     </div>
-                    {selectedDoctor === doc.id && <Check className="w-4 h-4 text-[#a78bfa]" />}
+                    {selectedDoctor === doc.id && <Check className="w-4 h-4 text-[#bf5af2]" />}
                   </button>
                 ))}
               </div>
             </div>
 
             <button onClick={assignToken} disabled={loading}
-              className="w-full py-3 rounded-xl font-medium text-white transition-all flex items-center justify-center gap-2"
-              style={{ background: "linear-gradient(135deg, #a78bfa, #7c3aed)" }}>
-              {loading ? <div className="w-4 h-4 border-2 border-[rgba(255,255,255,0.3)] border-t-transparent rounded-full animate-spin" /> : <>Assign Token</>}
+              className="w-full py-3 rounded-2xl font-bold text-xs uppercase tracking-wider text-white transition-all flex items-center justify-center gap-2 bg-[#bf5af2] hover:bg-[#a844dc] shadow-[0_0_20px_rgba(191,90,242,0.3)]">
+              {loading ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <>Issue Token & Queue Patient</>}
             </button>
           </div>
         )}
 
         {step === "done" && (
-          <div className="text-center space-y-4 py-4">
-            <div className="w-16 h-16 rounded-2xl bg-[rgba(0,229,160,0.1)] border border-[rgba(0,229,160,0.3)] flex items-center justify-center mx-auto">
-              <Check className="w-8 h-8 text-[#00e5a0]" />
+          <div className="text-center space-y-5 py-4">
+            <div className="w-16 h-16 rounded-3xl bg-[#32d74b]/15 border border-[#32d74b]/30 flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(50,215,75,0.25)]">
+              <Check className="w-8 h-8 text-[#32d74b]" />
             </div>
             <div>
-              <h3 className="text-[#daeeff] text-xl">Token Assigned!</h3>
-              <p className="text-[#4a7a94] mt-1">{foundPatient?.name}</p>
+              <h3 className="text-white text-2xl font-black tracking-tight">Token Assigned</h3>
+              <p className="text-[#8e8e93] text-xs font-medium mt-1">{foundPatient?.name}</p>
             </div>
-            <div className="text-6xl font-bold text-[#a78bfa]">#{generatedToken}</div>
-            <p className="text-[#4a7a94] text-sm">Patient added to queue for {doctors.find((d) => d.id === selectedDoctor)?.name}</p>
-            <button onClick={reset} className="w-full py-3 rounded-xl text-sm border border-[rgba(167,139,250,0.2)] text-[#a78bfa] hover:bg-[rgba(167,139,250,0.05)] transition-colors">
-              Register Another Patient
+            <div className="text-6xl font-black text-[#bf5af2] tracking-tighter shadow-sm">#{generatedToken}</div>
+            <p className="text-[#8e8e93] text-xs font-medium">Patient is added to queue for {doctors.find((d) => d.id === selectedDoctor)?.name}</p>
+            <button onClick={reset} className="w-full py-3 rounded-2xl text-xs font-bold uppercase tracking-wider border border-white/10 text-white hover:bg-white/10 transition-colors">
+              Register Next Walk-in
             </button>
           </div>
         )}

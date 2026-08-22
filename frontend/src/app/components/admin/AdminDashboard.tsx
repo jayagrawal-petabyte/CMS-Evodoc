@@ -5,8 +5,22 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Users, Clock, CheckCircle2, TrendingUp, AlertCircle, Activity, Calendar, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router";
 
-// Professional dark theme chart colors
-const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
+const PIE_COLORS = ["#2563eb", "#16a34a", "#d97706", "#9333ea"];
+
+// Helper: generate 2-letter initials from a name
+function nameInitials(name: string) {
+  return name.replace("Dr. ", "").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+}
+
+// Pastel stat card colours keyed by meaning
+const kpiMeta = [
+  { label: "Total Tokens",  icon: Users,         tint: "stat-blue",   deltaColor: "text-blue-600" },
+  { label: "Completed",     icon: CheckCircle2,  tint: "stat-green",  deltaColor: "text-green-600" },
+  { label: "Revenue Today", icon: TrendingUp,    tint: "stat-green",  deltaColor: "text-green-600" },
+  { label: "Waiting Now",   icon: Clock,         tint: "stat-yellow", deltaColor: "text-amber-600" },
+  { label: "Registered",    icon: Activity,      tint: "stat-blue",   deltaColor: "text-blue-600" },
+  { label: "Abandoned",     icon: AlertCircle,   tint: "stat-red",    deltaColor: "text-red-600" },
+];
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -73,198 +87,221 @@ export default function AdminDashboard() {
   }, []);
 
   const kpis = [
-    { label: "Total Tokens Today", value: today.totalTokens, icon: Users, color: "text-primary", bg: "bg-primary/10", delta: `${today.waiting} waiting` },
-    { label: "Completed", value: today.completed, icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-500/10", delta: `${today.totalTokens ? Math.round((today.completed / today.totalTokens) * 100) : 0}% throughput` },
-    { label: "Revenue Today", value: `₹${(today.revenue / 1000).toFixed(1)}k`, icon: TrendingUp, color: "text-purple-500", bg: "bg-purple-500/10", delta: "Paid invoices today" },
-    { label: "Waiting Now", value: today.waiting, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10", delta: "In queue" },
-    { label: "Patients", value: today.newPatients, icon: Activity, color: "text-primary", bg: "bg-primary/10", delta: "Total registered" },
-    { label: "Abandoned", value: today.abandoned, icon: AlertCircle, color: "text-destructive", bg: "bg-destructive/10", delta: "LWBS today" },
+    { label: "Total Tokens",  value: today.totalTokens, delta: `${today.waiting} waiting` },
+    { label: "Completed",     value: today.completed,   delta: `${today.totalTokens ? Math.round((today.completed / today.totalTokens) * 100) : 0}% throughput` },
+    { label: "Revenue Today", value: `₹${(today.revenue / 1000).toFixed(1)}k`, delta: "Paid invoices" },
+    { label: "Waiting Now",   value: today.waiting,     delta: "In queue" },
+    { label: "Registered",    value: today.newPatients, delta: "Total patients" },
+    { label: "Abandoned",     value: today.abandoned,   delta: "LWBS count" },
   ];
 
-  const tooltipStyle = { backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "6px", color: "hsl(var(--foreground))" };
+  const tooltipStyle = {
+    backgroundColor: "#fff",
+    border: "1px solid #e5e7eb",
+    borderRadius: "10px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    color: "#111827",
+    fontSize: "12px",
+    fontWeight: "600",
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6">
+      {/* Page header: Single clear heading line */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-foreground text-2xl font-medium">Admin Dashboard</h1>
-          <p className="text-muted-foreground text-sm">{new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">Dashboard Overview</h1>
+          <p className="text-xs text-gray-500 mt-1">{new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })} · Clinic Operations & Analytics</p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-emerald-500 text-sm font-medium">Live Dashboard</span>
+        <div className="flex items-center gap-3">
+          <button className="cms-btn-secondary cursor-pointer">Filter</button>
+          <button className="cms-btn-secondary cursor-pointer">Export</button>
+          <button className="cms-btn-primary cursor-pointer" onClick={() => navigate("/admin/walkin")}>+ New Walk-in</button>
         </div>
       </div>
 
-      {/* KPI grid */}
+      {/* KPI grid — pastel tinted cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {kpis.map(({ label, value, icon: Icon, color, bg, delta }, i) => (
-          <motion.div
-            key={label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="rounded-md p-4 border border-border bg-card space-y-2"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-muted-foreground text-xs leading-tight">{label}</p>
-              <div className={`w-7 h-7 rounded-md flex items-center justify-center flex-shrink-0 ${bg}`}>
-                <Icon className={`w-3.5 h-3.5 ${color}`} />
+        {kpis.map(({ label, value, delta }, i) => {
+          const meta = kpiMeta[i];
+          const Icon = meta.icon;
+          return (
+            <motion.div
+              key={label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.04 }}
+              className={`cms-card p-5 ${meta.tint} border-0 rounded-2xl`}
+            >
+              <div className="flex items-start justify-between mb-3">
+                <p className="text-xs font-semibold text-gray-600 leading-tight">{label}</p>
+                <Icon className="w-4 h-4 opacity-60 flex-shrink-0" />
               </div>
-            </div>
-            <p className="text-2xl font-semibold text-foreground">{value}</p>
-            <p className={`text-xs ${color}`}>{delta}</p>
-          </motion.div>
-        ))}
+              <p className="text-2xl font-bold leading-none mb-1">{value}</p>
+              <p className={`text-[11px] font-semibold ${meta.deltaColor}`}>{delta}</p>
+            </motion.div>
+          );
+        })}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      {/* Charts row */}
+      <div className="grid lg:grid-cols-3 gap-5">
         {/* Revenue chart */}
-        <div className="lg:col-span-2 rounded-md border border-border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-foreground font-medium text-sm">Weekly Revenue</h3>
-            <span className="text-muted-foreground text-xs">Last 6 days</span>
+        <div className="lg:col-span-2 cms-card p-6 rounded-2xl">
+          <div className="flex items-center justify-between mb-5">
+            <div>
+              <h3 className="text-sm font-bold text-gray-800">Revenue Trend</h3>
+              <p className="text-xs text-gray-400 mt-0.5">Last 6 days · Paid invoices</p>
+            </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={revenueByDay}>
               <defs>
                 <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--chart-3))" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="hsl(var(--chart-3))" stopOpacity={0} />
+                  <stop offset="5%"  stopColor="#d97706" stopOpacity={0.18} />
+                  <stop offset="95%" stopColor="#d97706" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="day" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
+              <XAxis dataKey="day" tick={{ fill: "#9ca3af", fontSize: 11 }} axisLine={false} tickLine={false} />
+              <YAxis tick={{ fill: "#9ca3af", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
               <Tooltip contentStyle={tooltipStyle} formatter={(v: number) => [`₹${v.toLocaleString()}`, "Revenue"]} />
-              <Area type="monotone" dataKey="revenue" stroke="hsl(var(--chart-3))" fill="url(#revGrad)" strokeWidth={2} />
+              <Area type="monotone" dataKey="revenue" stroke="#d97706" fill="url(#revGrad)" strokeWidth={2.5} dot={{ fill: "#d97706", r: 4 }} activeDot={{ r: 6 }} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         {/* Specialization breakdown */}
-        <div className="rounded-md border border-border bg-card p-5">
-          <h3 className="text-foreground font-medium text-sm mb-4">By Specialization</h3>
-          <div className="flex justify-center mb-4">
-            <PieChart width={140} height={140}>
-              <Pie data={bySpecialization} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={3} dataKey="value">
-                {bySpecialization.map((d, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+        <div className="cms-card p-6 rounded-2xl">
+          <h3 className="text-sm font-bold text-gray-800 mb-4">Provider Mix</h3>
+          <div className="flex justify-center">
+            <PieChart width={130} height={130}>
+              <Pie data={bySpecialization} cx="50%" cy="50%" innerRadius={38} outerRadius={62} paddingAngle={4} dataKey="value">
+                {bySpecialization.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
               </Pie>
             </PieChart>
           </div>
-          <div className="space-y-2 mt-6">
+          <div className="space-y-2 pt-3">
             {bySpecialization.map((d, i) => (
               <div key={d.name} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-sm" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
-                  <span className="text-muted-foreground text-xs">{d.name}</span>
+                  <div className="w-2 h-2 rounded-full" style={{ background: PIE_COLORS[i % PIE_COLORS.length] }} />
+                  <span className="text-gray-500 text-xs font-medium">{d.name}</span>
                 </div>
-                <span className="text-foreground text-xs font-medium">{d.value}</span>
+                <span className="text-gray-800 text-xs font-bold">{d.value}</span>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        {/* Live queue snapshot */}
-        <div className="rounded-md border border-border bg-card overflow-hidden">
-          <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-muted/30">
+      {/* Queue + Appointments */}
+      <div className="grid lg:grid-cols-2 gap-5">
+        {/* Live queue */}
+        <div className="cms-card overflow-hidden rounded-2xl">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <h3 className="text-foreground font-medium text-sm">Live Queue Snapshot</h3>
+              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+              <h3 className="text-sm font-bold text-gray-800">Live Queue</h3>
             </div>
-            <button onClick={() => navigate("/admin/queue")} className="text-primary text-xs flex items-center gap-1 hover:underline">
-              Full view <ArrowRight className="w-3 h-3" />
+            <button onClick={() => navigate("/admin/queue")} className="text-gray-500 text-xs font-semibold flex items-center gap-1 hover:text-gray-800 transition-colors cursor-pointer">
+              Full Queue <ArrowRight className="w-3 h-3" />
             </button>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-gray-50">
             {liveTokens.slice(0, 5).map((t) => (
-              <div key={t.id} className="px-5 py-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md bg-muted border border-border flex items-center justify-center text-foreground text-sm font-semibold">
-                  {t.tokenNumber}
+              <div key={t.id} className="px-6 py-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors">
+                <div className="avatar-chip bg-gray-100 text-gray-700 text-[11px] font-black w-9 h-9">
+                  #{t.tokenNumber}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-foreground text-sm truncate font-medium">{t.patientName}</p>
-                  <p className="text-muted-foreground text-xs truncate">{t.doctorName}</p>
+                  <p className="text-gray-800 text-sm font-semibold truncate">{t.patientName}</p>
+                  <p className="text-gray-400 text-xs truncate">{t.doctorName}</p>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-md border ${
-                  t.status === "Called" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                  t.status === "Arrived" ? "bg-primary/10 text-primary border-primary/20" :
-                  "bg-amber-500/10 text-amber-500 border-amber-500/20"
+                <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full ${
+                  t.status === "Called"   ? "badge-confirmed" :
+                  t.status === "Arrived"  ? "badge-inprogress" :
+                  "badge-pending"
                 }`}>
                   {t.status}
                 </span>
               </div>
             ))}
+            {liveTokens.length === 0 && (
+              /* Reduced visual weight for empty queue */
+              <div className="py-6 text-center text-gray-400 text-xs font-medium">No patients in live queue</div>
+            )}
           </div>
         </div>
 
-        {/* Today's appointments */}
-        <div className="rounded-md border border-border bg-card overflow-hidden">
-          <div className="px-5 py-3 border-b border-border flex items-center justify-between bg-muted/30">
-            <h3 className="text-foreground font-medium text-sm">Today's Appointments</h3>
-            <button onClick={() => navigate("/admin/appointments")} className="text-primary text-xs flex items-center gap-1 hover:underline">
-              All <ArrowRight className="w-3 h-3" />
+        {/* Today appointments */}
+        <div className="cms-card overflow-hidden rounded-2xl">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-800">Today's Appointments</h3>
+            <button onClick={() => navigate("/admin/appointments")} className="text-gray-500 text-xs font-semibold flex items-center gap-1 hover:text-gray-800 transition-colors cursor-pointer">
+              All Visits <ArrowRight className="w-3 h-3" />
             </button>
           </div>
-          <div className="divide-y divide-border">
+          <div className="divide-y divide-gray-50">
             {todayAppts.slice(0, 5).map((a) => (
-              <div key={a.id} className="px-5 py-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-md bg-muted border border-border flex items-center justify-center">
-                  <Calendar className="w-4 h-4 text-muted-foreground" />
+              <div key={a.id} className="px-6 py-3.5 flex items-center gap-3 hover:bg-gray-50 transition-colors">
+                <div className="avatar-chip text-xs font-bold" style={{ backgroundColor: "#eef4ff", color: "#2563eb" }}>
+                  {(a.patientName ?? "?").split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-foreground text-sm truncate font-medium">{a.patientName}</p>
-                  <p className="text-muted-foreground text-xs">{a.doctorName} · {new Date(a.slotStart).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</p>
+                  <p className="text-gray-800 text-sm font-semibold truncate">{a.patientName}</p>
+                  <p className="text-gray-400 text-xs">{a.doctorName} · {new Date(a.slotStart).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</p>
                 </div>
-                <span className={`text-xs px-2 py-0.5 rounded-md border ${
-                  a.status === "Completed" ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                  a.status === "Cancelled" ? "bg-destructive/10 text-destructive border-destructive/20" :
-                  "bg-primary/10 text-primary border-primary/20"
+                <span className={`text-[10px] font-bold uppercase tracking-wide px-2.5 py-0.5 rounded-full ${
+                  a.status === "Completed" ? "badge-confirmed" :
+                  a.status === "Cancelled" ? "badge-cancelled" :
+                  "badge-scheduled"
                 }`}>
                   {a.status}
                 </span>
               </div>
             ))}
+            {todayAppts.length === 0 && (
+              /* Reduced visual weight for empty appointments */
+              <div className="py-6 text-center text-gray-400 text-xs font-medium">No appointments today</div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Doctor performance row */}
-      <div className="rounded-md border border-border bg-card p-5">
-        <h3 className="text-foreground font-medium text-sm mb-4">Doctor Performance Today</h3>
+      {/* Doctor activity */}
+      <div className="cms-card p-6">
+        <h3 className="text-sm font-bold text-gray-800 mb-4">Provider Activity Today</h3>
         <div className="grid md:grid-cols-3 gap-4">
           {doctors.map((doc) => (
-            <div key={doc.id} className="rounded-md p-4 border border-border bg-muted/30">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-9 h-9 rounded-md bg-muted border border-border flex items-center justify-center text-foreground text-sm font-semibold">
-                  {doc.name.replace("Dr. ", "").split(" ").map((n) => n[0]).join("")}
-                </div>
+            <div key={doc.id} className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="avatar-chip bg-gray-200 text-gray-700 text-xs">{nameInitials(doc.name)}</div>
                 <div>
-                  <p className="text-foreground text-sm font-medium">{doc.name}</p>
-                  <p className="text-muted-foreground text-xs">{doc.specialization}</p>
+                  <p className="text-gray-800 text-xs font-bold">{doc.name}</p>
+                  <p className="text-gray-400 text-[11px]">{doc.specialization}</p>
                 </div>
               </div>
-              <div className="flex gap-3 text-center text-xs">
-                <div className="flex-1">
-                  <p className="text-emerald-500 font-semibold">{doc.todayStats.completed}</p>
-                  <p className="text-muted-foreground">Done</p>
+              <div className="flex gap-2 text-center text-xs">
+                <div className="flex-1 bg-white py-2 rounded-lg border border-gray-100">
+                  <p className="text-green-600 font-bold text-sm">{doc.todayStats.completed}</p>
+                  <p className="text-gray-400 text-[10px] uppercase font-semibold">Done</p>
                 </div>
-                <div className="flex-1">
-                  <p className="text-amber-500 font-semibold">{doc.todayStats.waiting}</p>
-                  <p className="text-muted-foreground">Waiting</p>
+                <div className="flex-1 bg-white py-2 rounded-lg border border-gray-100">
+                  <p className="text-amber-600 font-bold text-sm">{doc.todayStats.waiting}</p>
+                  <p className="text-gray-400 text-[10px] uppercase font-semibold">Waiting</p>
                 </div>
-                <div className="flex-1">
-                  <p className="text-foreground font-semibold">{doc.todayStats.total}</p>
-                  <p className="text-muted-foreground">Total</p>
+                <div className="flex-1 bg-white py-2 rounded-lg border border-gray-100">
+                  <p className="text-gray-800 font-bold text-sm">{doc.todayStats.total}</p>
+                  <p className="text-gray-400 text-[10px] uppercase font-semibold">Total</p>
                 </div>
               </div>
-              <div className="mt-3 h-1.5 rounded-full bg-muted overflow-hidden">
-                <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(doc.todayStats.total ? doc.todayStats.completed / doc.todayStats.total : 0) * 100}%` }} />
+              <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                <div className="h-full bg-green-500 rounded-full transition-all duration-700" style={{ width: `${(doc.todayStats.total ? doc.todayStats.completed / doc.todayStats.total : 0) * 100}%` }} />
               </div>
             </div>
           ))}
+          {doctors.length === 0 && <p className="text-gray-400 text-xs col-span-3">No doctor data available.</p>}
         </div>
       </div>
     </div>

@@ -28,74 +28,77 @@ export default function PatientAppointments() {
   const past = myApps.filter((a) => a.status !== "Scheduled" && a.status !== "Arrived");
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:py-16 text-foreground font-sans min-h-screen">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="apple-hero-text text-4xl tracking-tight text-white">Visits.</h1>
+    <div className="max-w-4xl mx-auto py-8 text-foreground font-sans min-h-screen space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#2997ff]">Appointments</p>
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white">Your Visits</h1>
+        </div>
         <button 
           onClick={() => navigate("/book")}
-          className="bg-white text-black p-2 md:px-4 md:py-2 rounded-full font-semibold text-[15px] flex items-center gap-2 hover:scale-[1.02] transition-transform"
+          className="bg-[#2997ff] text-white px-5 py-2.5 rounded-2xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:bg-[#0077ed] transition-all shadow-lg shadow-[#2997ff]/30"
         >
-          <Plus className="w-5 h-5" /> <span className="hidden md:inline">Book New</span>
+          <Plus className="w-4 h-4" /> <span>Book New</span>
         </button>
       </div>
 
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="space-y-10">
         {upcoming.length > 0 ? (
           <div>
-            <div className="flex items-center gap-2 mb-3 px-2">
-              <Calendar className="w-5 h-5 text-[#2997ff]" />
-              <h2 className="text-[15px] font-semibold text-[#86868b] uppercase tracking-widest">Upcoming</h2>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <Calendar className="w-4 h-4 text-[#2997ff]" />
+              <h2 className="text-xs font-bold text-[#8e8e93] uppercase tracking-widest">Upcoming Consultations</h2>
             </div>
-            <div className="apple-card overflow-hidden divide-y divide-white/5 border border-white/10">
+            <div className="space-y-3">
               {upcoming.map((appt) => (
-                <div key={appt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-white/5 transition-colors cursor-pointer group">
-                  <div className="flex gap-5 items-start">
-                    <div className="w-14 h-14 rounded-2xl bg-[#2997ff]/20 text-[#2997ff] flex flex-col items-center justify-center border border-[#2997ff]/30 shadow-lg">
+                <div key={appt.id} className="interactive-card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer group">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-14 h-14 rounded-2xl bg-[#2997ff]/15 text-[#2997ff] flex flex-col items-center justify-center border border-[#2997ff]/30 shadow-md flex-shrink-0">
                       <span className="text-[10px] font-bold uppercase">{new Date(appt.slotStart).toLocaleDateString("en-IN", { month: "short" })}</span>
-                      <span className="text-xl font-bold leading-none">{new Date(appt.slotStart).toLocaleDateString("en-IN", { day: "numeric" })}</span>
+                      <span className="text-xl font-black leading-none">{new Date(appt.slotStart).toLocaleDateString("en-IN", { day: "numeric" })}</span>
                     </div>
                     <div>
-                      <h3 className="text-xl font-bold tracking-tight text-white mb-1">{appt.doctorName}</h3>
-                      <p className="text-[#86868b] text-[15px] font-medium flex items-center gap-2">
-                        <Clock className="w-4 h-4" /> {new Date(appt.slotStart).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
+                      <h3 className="text-base font-bold tracking-tight text-white mb-0.5">{appt.doctorName}</h3>
+                      <p className="text-[#8e8e93] text-xs font-medium flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#2997ff]" /> {new Date(appt.slotStart).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} · Status: <span className="text-[#32d74b] font-semibold">{appt.status}</span>
                       </p>
                     </div>
                   </div>
-                  <ChevronRight className="w-6 h-6 text-[#86868b] hidden md:block group-hover:text-white transition-colors" />
+                  <ChevronRight className="w-5 h-5 text-[#8e8e93] hidden md:block group-hover:text-white transition-colors" />
                 </div>
               ))}
             </div>
           </div>
         ) : (
-          <div className="apple-card p-12 text-center">
-            <Calendar className="w-16 h-16 text-[#86868b] mx-auto mb-4 opacity-50" />
-            <h2 className="text-2xl font-bold tracking-tight text-white mb-2">No upcoming visits</h2>
-            <p className="text-[#86868b] font-medium text-lg">You have no scheduled appointments.</p>
+          <div className="apple-card p-10 text-center">
+            <Calendar className="w-12 h-12 text-[#8e8e93] mx-auto mb-3 opacity-40" />
+            <h2 className="text-xl font-bold tracking-tight text-white mb-1">No upcoming visits</h2>
+            <p className="text-[#8e8e93] font-medium text-xs">You have no scheduled appointments currently.</p>
           </div>
         )}
 
         {past.length > 0 && (
           <div>
-            <div className="flex items-center gap-2 mb-3 px-2">
-              <Activity className="w-5 h-5 text-[#86868b]" />
-              <h2 className="text-[15px] font-semibold text-[#86868b] uppercase tracking-widest">Past Visits</h2>
+            <div className="flex items-center gap-2 mb-3 px-1">
+              <Activity className="w-4 h-4 text-[#8e8e93]" />
+              <h2 className="text-xs font-bold text-[#8e8e93] uppercase tracking-widest">Past History</h2>
             </div>
-            <div className="apple-card overflow-hidden divide-y divide-white/5 border border-white/10">
+            <div className="space-y-3">
               {past.map((appt) => (
-                <div key={appt.id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                  <div className="flex gap-5 items-center">
-                    <div className="w-12 h-12 rounded-2xl bg-black border border-white/5 flex items-center justify-center text-[#86868b]">
-                      <Calendar className="w-5 h-5" />
+                <div key={appt.id} className="apple-card p-4 md:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex gap-4 items-center">
+                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-[#8e8e93] flex-shrink-0">
+                      <Calendar className="w-4 h-4" />
                     </div>
                     <div>
-                      <h3 className="text-[17px] font-bold tracking-tight text-white">{appt.doctorName}</h3>
-                      <p className="text-[#86868b] text-sm font-medium">
+                      <h3 className="text-sm font-bold tracking-tight text-white">{appt.doctorName}</h3>
+                      <p className="text-[#8e8e93] text-xs font-medium">
                         {new Date(appt.slotStart).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                       </p>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${
-                    appt.status === "Completed" ? "bg-black text-[#86868b] border border-white/10" : "bg-[#ff453a]/10 text-[#ff453a] border border-[#ff453a]/20"
+                  <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider self-start md:self-auto ${
+                    appt.status === "Completed" ? "bg-[#32d74b]/10 text-[#32d74b] border border-[#32d74b]/20" : "bg-[#ff453a]/10 text-[#ff453a] border border-[#ff453a]/20"
                   }`}>
                     {appt.status}
                   </span>

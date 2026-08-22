@@ -1,4 +1,7 @@
-import { createBrowserRouter, redirect } from "react-router";
+import { createBrowserRouter } from "react-router";
+
+// Home page
+import HomePage from "./components/home/HomePage";
 
 // Auth pages
 import PatientLogin from "./components/auth/PatientLogin";
@@ -41,8 +44,12 @@ import AuditLog from "./components/admin/AuditLog";
 import ClinicSettings from "./components/admin/ClinicSettings";
 
 export const router = createBrowserRouter([
+  // Home page
+  { path: "/", Component: HomePage },
+
   // Auth routes
-  { path: "/", Component: PatientLogin },
+  { path: "/auth/patient", Component: PatientLogin },
+  { path: "/login", Component: PatientLogin },
   { path: "/auth/doctor", Component: DoctorLogin },
   { path: "/auth/admin", Component: AdminLogin },
   { path: "/auth/register", Component: Register },

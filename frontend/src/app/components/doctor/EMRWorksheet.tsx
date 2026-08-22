@@ -105,9 +105,8 @@ export default function EMRWorksheet() {
         </button>
         <button
           onClick={handleSave}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[15px] transition-all ${
-            saved ? "bg-[#32d74b] text-black" : "bg-white text-black hover:scale-[1.02]"
-          }`}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[15px] transition-all ${saved ? "bg-[#32d74b] text-black" : "bg-white text-black hover:scale-[1.02]"
+            }`}
         >
           {saved ? <Activity className="w-5 h-5" /> : <Save className="w-5 h-5" />}
           {saved ? "Saved to EMR" : "Save Record"}
@@ -204,7 +203,7 @@ export default function EMRWorksheet() {
                 <Plus className="w-4 h-4" /> Add Med
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <AnimatePresence>
                 {prescriptions.map((med, index) => (
